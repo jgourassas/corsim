@@ -1,17 +1,22 @@
 
-## CORSIM Is a simple simulation of  Coronary arteries - Coronary Angiography
+## CORSIM Is a simple and naive  simulation of Coronary Angiography views
 
-### Developed In Rust - OpenGl - Fltk-rs
+*Requirments:*
+***OpenGl, Rust, FLTK, fltk-rs***
 
-### For Optimal Fluoroscopic Viewing Angles of Coronary Artery Ostia and Bifurcations
+### For Optimal Fluoroscopic Viewing Angles:
 
-1. LM Ostium LAO 37, CRA 22
-2. LM Proximal LAO 1, CRA 37
-3. RCA Ostium LAO 64, CAU 51
-4. RCA Proximal LAO 79, CRA 41
-5. BIFURCATION LM-LAD-LCx = LAO 0, CAU 49
-6. LAD-Diagonal = LAO 11, CRA 71
-7. LCx-OM LAO 24, CAU 33
-8. PDA-PL LAO 44, CRA 34
+1. Di Mario C, Sutaria N. Coronary angiography in
+the angioplasty era: projections with a meaning.
+Heart 2005;91:968â-76.
+
+2. JACC: CARDIOVASCULAR INTERVENTIONS VOL. 13, NO. 21, 2020 NOVEMBER 9, 2020:2560070
+
+
 
 ![Spider View](images/spider.jpg)
+***More screenshots in images directory***
+
+
+
+ 

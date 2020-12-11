@@ -22,23 +22,25 @@ pub fn get_segments_names_92() -> Vec<String> {
         "D2".to_string(),
         "D3".to_string(),
         "MR".to_string(),
-        // "OM".to_string(),
-        //"OA".to_string(),
-        //"OP".to_string(),
+        "OM".to_string(),//?Obtuse marginal
+        "OA".to_string(),//Anterior distal branch of OM
+        "OP".to_string(),//Posterior distal branch of OM
         "M1".to_string(),
         "M2".to_string(),
         "M3".to_string(),
         "CP".to_string(),
         "CI".to_string(),
-        //"CD".to_string(),
+        //"CD".to_string(),//Distal most inferior wall branch arises from C4, present only inleft-dominant anatomy
+      
         "RD".to_string(),
         "RI".to_string(),
-        "RP".to_string(),
-    ];
+        //"RP".to_string(),
+    
+        ];
     segment_names
 } //get segments_names
-// Fom dodge 92  RCA Dominant
-// midpoints_diameters
+  // Fom dodge 92  RCA Dominant
+  // midpoints_diameters
 pub fn get_midpoint_92(point_name: &str) -> Vec<f32> {
     let mut points = HashMap::new();
     points.insert(
@@ -291,6 +293,14 @@ pub fn get_midpoint_92(point_name: &str) -> Vec<f32> {
         String::from("MRm"),
         vec![4.572078722347505, -3.1314802594361826, 0.806180836672952],
     );
+    points.insert(String::from("OMp"), vec![2.342245650465862, -1.3999999999999997, -0.6276028305176377]);
+    points.insert(String::from("OMm"), vec![2.8384734967392573, -1.8547174248162173, -0.8678084364604395]);
+    points.insert(String::from("OMd"), vec![3.1720338774402985, -2.4099195343991395, -0.9697880789597789]);
+    points.insert(String::from("OAo"), vec![3.3604513207724396, -2.6479861018690127, -1.027393072308413]);
+    points.insert(String::from("OAp"), vec![3.79147090319087, -3.6145913083312418, -0.8059020188541839]);
+    points.insert(String::from("OAm"), vec![4.632501989794268, -5.358438019581681, 0.48689557900405106]);
+    
+    /*
     points.insert(
         String::from("OMp"),
         vec![2.342245650465862, -1.3999999999999997, -0.6276028305176377],
@@ -315,6 +325,8 @@ pub fn get_midpoint_92(point_name: &str) -> Vec<f32> {
         String::from("OAm"),
         vec![4.632501989794268, -5.358438019581681, 0.48689557900405106],
     );
+    */
+
     points.insert(
         String::from("OPo"),
         vec![3.3604513207724396, -2.6479861018690127, -1.027393072308413],
@@ -450,9 +462,6 @@ pub fn get_midpoint_92(point_name: &str) -> Vec<f32> {
     }
 }
 
-
-
-
 /***********************************************************************8 */
 pub fn get_segment_points_92(segment_name: &str) -> Vec<&str> {
     let mut segments = HashMap::new();
@@ -477,11 +486,11 @@ pub fn get_segment_points_92(segment_name: &str) -> Vec<&str> {
     segments.insert(String::from("D1"), vec!["L1d", "D1o", "D1p", "D1m"]);
     segments.insert(String::from("D2"), vec!["L2m", "D2o", "D2p", "D2m"]);
     segments.insert(String::from("D3"), vec!["L2d", "D3o", "D3p", "D3m"]);
-    segments.insert(String::from("MR"), vec!["LMd", "MRo", "MRp", "MRm"]); //Ramus Medianus
-    segments.insert(String::from("OM"), vec!["C1d", "OMo", "OMp", "OMm"]); //Obtuse marginal
-    segments.insert(String::from("OA"), vec!["OMp", "OAo", "OAp", "OAm"]); //Anterior branch Obtuse marginal
-    segments.insert(String::from("OP"), vec!["OMm", "OPo", "OPp", "OPm"]); //POSTERIOR branch Obtuse marginal
-    segments.insert(String::from("M1"), vec!["C1d", "M1o", "M1p", "M1m"]); //M1 MARGINAL FROM LCX
+    segments.insert(String::from("MR"), vec!["C1p", "MRo", "MRp", "MRm"]); //Ramus Medianus
+    segments.insert(String::from("OM"), vec!["C1d", "OMp", "OMm", "OMd"]); //Obtuse marginal
+    segments.insert(String::from("OA"), vec!["OMd", "OAo", "OAp", "OAm"]); //Anterior branch Obtuse marginal
+    segments.insert(String::from("OP"), vec!["OMd", "OPo", "OPp", "OPm"]); //POSTERIOR branch Obtuse marginal
+    segments.insert(String::from("M1"), vec!["C1d", "M1o", "M1p", "M1m"]); //M1 MARGINAL  FROM LCX
     segments.insert(String::from("M2"), vec!["C2m", "M2o", "M2p", "M2m"]); //M2 MARGINAL FROM LCX
     segments.insert(String::from("M3"), vec!["C3p", "M3o", "M3p", "M3m"]); //M3 MARGINAL FROM LCX
                                                                            /* CP = Proximal most inferior wall branch arises from junction of C3 and C4,
@@ -526,7 +535,6 @@ pub fn get_segment_points_92(segment_name: &str) -> Vec<&str> {
         vec!["R", "R", "R"]
     }
 }
-
 
 //The parameters to glColor3f have to be floating point values in the range [0.0, 1.0],
 //compare to glColor3ub, where the parameters are integral values in the range [0, 255].
@@ -613,6 +621,19 @@ pub fn get_midpoint_color_92(point_name: &str) -> Vec<u8> {
     colors.insert(String::from("MRm"), vec![203, 201, 226]);
     colors.insert(String::from("MRd"), vec![203, 201, 226]);
 
+    colors.insert(String::from("OMp"), vec![255, 255, 191]);
+    colors.insert(String::from("OMm"), vec![255, 255, 191]);
+    colors.insert(String::from("OMd"), vec![255, 255, 191]);
+
+//    segments.insert(String::from("M3"), vec!["C3p", "M3o", "M3p", "M3m"]); //M3 MARGINAL FROM LCX
+    
+
+
+    colors.insert(String::from("OAo"), vec![255, 255, 191]);
+    colors.insert(String::from("OAp"), vec![255, 255, 191]);
+    colors.insert(String::from("OAm"), vec![255, 255, 191]);
+    
+
     colors.insert(String::from("M1p"), vec![255, 255, 191]);
     colors.insert(String::from("M1m"), vec![255, 255, 191]);
     colors.insert(String::from("M1d"), vec![255, 255, 191]);
@@ -621,9 +642,9 @@ pub fn get_midpoint_color_92(point_name: &str) -> Vec<u8> {
     colors.insert(String::from("M2m"), vec![255, 255, 191]);
     colors.insert(String::from("M2d"), vec![255, 255, 191]);
 
+    colors.insert(String::from("M3o"), vec![255, 255, 191]);
     colors.insert(String::from("M3p"), vec![255, 255, 191]);
     colors.insert(String::from("M3m"), vec![255, 255, 191]);
-    colors.insert(String::from("M3d"), vec![255, 255, 191]);
 
     colors.insert(String::from("CPp"), vec![171, 217, 233]);
     colors.insert(String::from("CPm"), vec![171, 217, 233]);
@@ -664,8 +685,6 @@ pub fn get_midpoint_color_92(point_name: &str) -> Vec<u8> {
            }
     */
 }
-
-
 
 pub fn get_diameter(point_name: &str) -> f32 {
     let mut diameters = HashMap::new();
@@ -787,7 +806,7 @@ pub fn get_diameter(point_name: &str) -> f32 {
     if let Some(diameter) = diameter {
         *diameter
     } else {
-        0.0
+        1.5
     }
 
     // *diameter.unwrap()
@@ -820,18 +839,19 @@ fn get_data_92() {
 } //read data
 */
 
-/*
+
 //"SEGMENT_NAME","MEDIUM_LEN", "LONG_LEN", "RHO", "THETA",  "PHI"
-fn get_branch_data_92() {
+/*
+pub fn get_branch_data_92() {
     let mut reader = csv::ReaderBuilder::new()
         .has_headers(true)
-        .from_path("data/branches_spacial_loc_diameters92.csv")
+        .from_path("data/positions_branches.csv")
         .expect("Cannot read field");
 
     for result in reader.records() {
         let record = result.unwrap();
         let segment_name: String = record[0].trim().to_string();
-        let medium_diameter: f32 = record[2].parse::<f32>().unwrap();
+        //let medium_diameter: f32 = record[2].parse::<f32>().unwrap();
 
         let rho_str: String = record[3].trim().to_string();
         let theta_str: String = record[4].trim().to_string();
@@ -852,9 +872,7 @@ fn get_branch_data_92() {
       //println!("vessels_data{:?}", vessels_data);
 } //read data
   /******************************************** */
-
 */
-
 
 
 /*
@@ -892,4 +910,3 @@ fn angle2pos(segment: String, radius_arg: f64, theta_arg: f64, phi_arg: f64) {
     //println!("{:?}, {:?},{:?},{:?};", segment, pos_x, pos_y, pos_z);
 } //angle2pos
 */
-

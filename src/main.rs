@@ -9,15 +9,8 @@ extern crate csv;
 
 extern crate nalgebra as na;
 use na::Point3;
-
 extern crate ncollide3d; // If you need 3D.
-                         //use ncollide3d::shape::ConvexHull
-
-//use ncollide3d::procedural;
-//use ncollide3d::procedural::path::{ArrowheadCap, PolylinePath, PolylinePattern, StrokePattern};
-//use ncollide3d::shape::{Ball, ConvexHull, Cuboid, Cylinder, Polyline, ShapeHandle};
-use ncollide3d::shape::{ Polyline};
-
+use ncollide3d::shape::Polyline;
 
 /********************************* */
 const MARGIN_TOP: i32 = 50;
@@ -27,9 +20,10 @@ const MARGIN_LEFT: i32 = 10;
 const SIZE_UNIT: f32 = 2.5;
 
 mod simcor_data_functions;
-use simcor_data_functions::{get_segments_names_92, get_midpoint_92, get_segment_points_92, 
-    get_midpoint_color_92, get_diameter};
-
+use simcor_data_functions::{
+    get_diameter, get_midpoint_92, get_midpoint_color_92, get_segment_points_92,
+    get_segments_names_92,
+};
 
 //const SIZE_UNIT: f32 = 2.0;
 /*
@@ -59,7 +53,7 @@ pub enum Message {
 
 pub fn main() {
     //get_data_92();
-    //get_branch_data_92();
+    // get_branch_data_92();
 
     let app = app::App::default().with_scheme(app::Scheme::Gtk);
     let mut fltk_wind = Window::new(
@@ -76,7 +70,7 @@ pub fn main() {
            FLTK_WINDOW_WIDTH - 60,
            FLTK_WINDOW_HEIGHT - 240,
            30,
-           200,
+
            "RAO-LAO",
        );
     */
@@ -232,10 +226,10 @@ pub fn main() {
                 *rao_lao.borrow_mut() = angle;
                 *cr_ca.borrow_mut() = angle;
 
-                 widget_cr_ca.set_value(0.0);
-                 frame_cr_ca.set_label(&(angle).to_string());
-                 
-                 widget_rao_lao.set_value(0.0);
+                widget_cr_ca.set_value(0.0);
+                frame_cr_ca.set_label(&(angle).to_string());
+
+                widget_rao_lao.set_value(0.0);
                 frame_rao_lao.set_label(&(angle).to_string());
                 gl_wind.redraw();
             }
@@ -292,42 +286,14 @@ fn setup_gl() {
         //glEnable(GL_POINT_SMOOTH);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
-
-        /*
-                let mat_ambient = vec![1.0, 1.0, 1.0, 1.0 ];
-                let  mat_ambient  = vec![ 1.0, 1.0, 1.0, 1.0 ];
-                let  mat_diffuse = vec![ 1.0, 0.2, 1.0, 1.0 ];
-                let mat_specular = vec![  1.0, 1.0, 1.0, 1.0 ];
-              //  let  mat_shininess: f32  = 50.0;
-
-                let  light0_position = vec![ 1.0, 0.1, 1.0, 0.0] ;
-                let  light1_position = vec![ -1.0, 0.1, 1.0, 0.0 ];
-
-                let  lmodel_ambient = vec![ 0.3, 0.3, 0.3, 1.0 ];
-
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse.as_ptr() );
-                glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular.as_ptr());
-               // glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess.as_ptr() );
-                glLightfv(GL_LIGHT0, GL_POSITION, light0_position.as_ptr() );
-                glLightfv(GL_LIGHT1, GL_POSITION, light1_position.as_ptr());
-                glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient.as_ptr());
-
-                glEnable(GL_LIGHTING);
-                glEnable(GL_LIGHT0);
-                glEnable(GL_LIGHT1);
-                glDepthFunc(GL_LESS);
-                glEnable(GL_DEPTH_TEST);
-                glEnable(GL_AUTO_NORMAL);
-        */
     } //usafe
 }
-
- 
 
 fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
     let point_names = get_segment_points_92(segment_name);
 
     let mut points = vec![];
+    let mut diameters_vec = vec![];
 
     let mut i = 0;
     unsafe {
@@ -343,42 +309,84 @@ fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32)
         glScalef(0.1, 0.1, 0.1);
         while i < point_names.len() {
             let midpoint = get_midpoint_92(&point_names[i]);
-            let color: Vec<u8> = get_midpoint_color_92(point_names[i]);
+            let color_vec: Vec<u8> = get_midpoint_color_92(point_names[i]);
+            //println!("point_names: {:?}", point_names[i] );
             let diameter: f32 = get_diameter(point_names[i]);
+            diameters_vec.push(diameter);
+
             let x = midpoint[0];
             let y = midpoint[1];
             let z = midpoint[2];
-            
 
             points.push(Point3::new(x, y, z));
-            draw_segment(&points, color, diameter);
+
+            // draw_as_bezier_segment(&points, &color_vec, &diameters_vec, point_names[i]);
+
+            draw_as_polyline_segment(&points, &color_vec, &diameters_vec, point_names[i]);
             i = i + 1;
         } //while
         glPopMatrix();
     } //unsafe
 } //draw_segments
-
+  /******************************************************* */
 /***********************************************************/
-//fn draw_segment(points: &[Point3<f32>], color: Vec<u8>, diameter: f32) {
-    fn draw_segment(points: &[Point3<f32>], color: Vec<u8>, diameter: f32) {  
-    // let convex = ConvexHull::try_from_points(&points).expect("Convex hull computation failed.");
-    //println!("draw_segments convex: {:?}", convex.points().len() );
-    //println!("draw_segments points: {:?}", points.to_vec());
-
+/*
+fn draw_as_bezier_segment(points: &[Point3<f32>], color: &Vec<u8>, diameters: &Vec<f32>, midpoint_name: &str) {
     let polyline = Polyline::new(points.to_vec(), None);
+    let bezier = procedural::bezier_curve(&polyline.points(), points.len());
 
     unsafe {
-        /****************************************************** */
+ /****************************************************** */
 
+ glPushMatrix();
+ glColor3ub(color[0], color[1], color[2]);
+ glPointSize(diameters[0] * SIZE_UNIT * 0.7 );
+ glLineWidth(diameters[0] * SIZE_UNIT * 0.7);
+ let mut j: usize = 0;
+ /*
+ glBegin(GL_POINTS);
+ while j <  bezier.len()   {
+    glVertex3fv(&bezier[j][0]);
+    j = j + 1;
+
+ }
+glEnd();
+*/
+
+glBegin(GL_LINE_STRIP);
+ while j <  bezier.len()   {
+    glVertex3fv(&bezier[j][0]);
+    j = j + 1;
+
+ }
+glEnd();
+
+
+glPopMatrix();
+        }//unsafe
+
+
+
+} //draw_segment
+*/
+
+/***********************************************************/
+fn draw_as_polyline_segment(
+    points: &[Point3<f32>],
+    color: &Vec<u8>,
+    diameters: &Vec<f32>,
+    _midpoint_name: &str,
+) {
+    let polyline = Polyline::new(points.to_vec(), None);
+    unsafe {
         glPushMatrix();
-        glLineWidth(diameter * SIZE_UNIT * 0.9);
+
         glColor3ub(color[0], color[1], color[2]);
-        
-              
-        glBegin(GL_LINE_STRIP);
         let mut j = 0;
+
+        glLineWidth(diameters[0] * SIZE_UNIT * 0.7);
+        glBegin(GL_LINE_STRIP);
         while j < polyline.points().len() {
-          
             glVertex3f(
                 polyline.points()[j][0],
                 polyline.points()[j][1],
@@ -388,11 +396,30 @@ fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32)
             j = j + 1;
         }
         glEnd();
-       
+
         glPopMatrix();
-        /*************************************************** */
+
+        glPushMatrix();
+        glPointSize(diameters[0] * SIZE_UNIT * 0.65);
+        let mut j = 0;
+
+        glBegin(GL_POINTS);
+        while j < polyline.points().len() {
+            glVertex3f(
+                polyline.points()[j][0],
+                polyline.points()[j][1],
+                polyline.points()[j][2],
+            );
+
+            j = j + 1;
+        }
+        glEnd();
+
+        glPopMatrix();
     } //unsafe
 } //draw_segment
+
+/***********************************************************/
 
 fn draw_machine(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
     unsafe {
@@ -421,36 +448,67 @@ fn draw_arm(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
         glTranslatef(-0.2, 0.0, 0.0);
 
         glRotatef(90.0, 0.0, 1.0, 0.0);
-     
 
         glRotatef(*rotate_cr_ca, 0.0, 0.0, -1.0); //z
         glRotatef(*rotate_rao_lao, -1.0, 0.0, 0.0); //x axis
 
         //Semi Tranparent
         glColor4f(252.0, 146.0, 114.0, 0.2);
-        
-              gluPartialDisk(
-                  quadric,
-                  OUTER_RADIOUS,
-                  OUTER_RADIOUS + 0.01,
-                  42,
-                  50,
-                  start_angle,
-                  end_angle,
-              );
-        
+
+        gluPartialDisk(
+            quadric,
+            OUTER_RADIOUS,
+            OUTER_RADIOUS + 0.01,
+            42,
+            50,
+            start_angle,
+            end_angle,
+        );
+
         /*************DRAW THE REST OF EQUIPMENT********* */
         draw_collimator();
-        x_ray_beam(); 
+        x_ray_beam();
         draw_digital_camera();
-
+        //draw_frame();
         /*********************************************** */
 
         glPopMatrix();
     } //unsafe
 } //draw_arm
 
-/*********************************************** */
+/************************************************/
+/*
+fn draw_frame(){
+    let mut x1 = 10.0;
+    let mut y1 = 10.0;
+    let mut x2 = 20.0;
+    let mut y2 = 20.0;
+
+    x1 = 2.0 * x1 / GL_WINDOW_WIDTH as f32 - 1.0;
+    y1 = 2.0 * y1 / GL_WINDOW_HEIGHT as f32 - 1.0;
+
+    x2 = 2.0 * x2 / GL_WINDOW_WIDTH  as f32 - 1.0;
+    y2 = 2.0 * y2 / GL_WINDOW_HEIGHT as f32 - 1.0;
+
+
+    unsafe{
+
+   glPushMatrix();
+
+   glTranslatef(0.2, 0.0, 0.0);
+   glBegin(GL_LINES);
+   glLineWidth(22.2);
+   glVertex2f(x1, y1);
+   glVertex2f(x2, y2);
+   glEnd();
+
+   glPopMatrix();
+
+    }
+
+}//draw_frame
+*/
+/**********************************************************/
 fn x_ray_beam() {
     let mut i: usize = 0;
 
@@ -481,15 +539,15 @@ fn draw_digital_camera() {
 
         glBegin(GL_POLYGON);
         // Multi-colored side - FRONT
-        glColor3ub(128,205,193);//green light
+        glColor3ub(128, 205, 193); //green light
         glVertex3f(-0.5, -0.5, -0.5); // P1
         glVertex3f(-0.5, 0.5, -0.5); // P2
         glVertex3f(0.5, 0.5, -0.5); // P3
         glVertex3f(0.5, -0.5, -0.5); // P4
-        
+
         // White side - BACK
         glBegin(GL_POLYGON);
-        glColor3ub(1,133,113);//green dark
+        glColor3ub(1, 133, 113); //green dark
         glVertex3f(0.5, -0.5, 0.5);
         glVertex3f(0.5, 0.5, 0.5);
         glVertex3f(-0.5, 0.5, 0.5);
@@ -498,7 +556,7 @@ fn draw_digital_camera() {
 
         // Purple side - RIGHT
         glBegin(GL_POLYGON);
-        glColor3ub(166,97,26);//green dark
+        glColor3ub(166, 97, 26); //green dark
         glVertex3f(0.5, -0.5, -0.5);
         glVertex3f(0.5, 0.5, -0.5);
         glVertex3f(0.5, 0.5, 0.5);
@@ -507,7 +565,7 @@ fn draw_digital_camera() {
 
         // Green side - LEFT
         glBegin(GL_POLYGON);
-        glColor3ub(223,194,125);
+        glColor3ub(223, 194, 125);
         glVertex3f(-0.5, -0.5, 0.5);
         glVertex3f(-0.5, 0.5, 0.5);
         glVertex3f(-0.5, 0.5, -0.5);
@@ -516,7 +574,7 @@ fn draw_digital_camera() {
 
         // Blue side - TOP
         glBegin(GL_POLYGON);
-        glColor3ub(203,201,22);
+        glColor3ub(203, 201, 22);
         glVertex3f(0.5, 0.5, 0.5);
         glVertex3f(0.5, 0.5, -0.5);
         glVertex3f(-0.5, 0.5, -0.5);
@@ -525,14 +583,13 @@ fn draw_digital_camera() {
 
         // Red side - BOTTOM
         glBegin(GL_POLYGON);
-        glColor3ub(106,81,163);
+        glColor3ub(106, 81, 163);
         glVertex3f(0.5, -0.5, -0.5);
         glVertex3f(0.5, -0.5, 0.5);
         glVertex3f(-0.5, -0.5, 0.5);
         glVertex3f(-0.5, -0.5, -0.5);
         glEnd();
 
-        
         glFlush();
         glPopMatrix();
     } //unsafe
@@ -558,4 +615,3 @@ fn draw_collimator() {
 } //draw_collimator
 
 /**************************************************** */
-
