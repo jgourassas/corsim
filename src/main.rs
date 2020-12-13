@@ -11,8 +11,12 @@ extern crate nalgebra as na;
 use na::Point3;
 extern crate ncollide3d; // If you need 3D.
 use ncollide3d::shape::Polyline;
+use ncollide2d::procedural::circle;
 
 /********************************* */
+
+
+/**************************************/
 const MARGIN_TOP: i32 = 50;
 const MARGIN_BOTTOM: i32 = 100;
 const MARGIN_RIGHT: i32 = 220;
@@ -61,7 +65,7 @@ pub fn main() {
         100,
         FLTK_WINDOW_WIDTH,
         FLTK_WINDOW_HEIGHT,
-        "CORONARY SIM. By John Gkourasas ",
+        "CORONARY Views. By John Gkourasas ",
     );
 
     //let mut frame = Frame::new(0, 0, FLTK_WINDOW_WIDTH,  FLTK_WINDOW_HEIGHT, "FRAME");
@@ -215,6 +219,7 @@ pub fn main() {
             Some((Message::Raolao, rao_angle)) => {
                 *rao_lao.borrow_mut() = rao_angle;
                 frame_rao_lao.set_label(&(rao_angle).to_string());
+
                 gl_wind.redraw();
             }
             Some((Message::Crca, cr_angle)) => {
@@ -254,6 +259,8 @@ fn draw_scene(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
         i = i + 1;
     } //while
     draw_machine(rotate_rao_lao, rotate_cr_ca);
+    set_marker(rotate_rao_lao, rotate_cr_ca);
+
 
     //draw_axis(rotate_rao_lao, rotate_cr_ca);
     //draw_floor();
@@ -369,7 +376,7 @@ glPopMatrix();
 
 } //draw_segment
 */
-
+/////
 /***********************************************************/
 fn draw_as_polyline_segment(
     points: &[Point3<f32>],
@@ -615,3 +622,140 @@ fn draw_collimator() {
 } //draw_collimator
 
 /**************************************************** */
+fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
+ 
+    /**********vec_rao_lao / cr_caudal********************* */
+   //lao - caudal - 
+    //LM ostium rao 5-10/ cr 35-45 ---lao 30-45 cr 25-35
+    //LM bifurcation lao 40-50/ caudal 25-45(spider) --- rao 5-15/caudal 30
+
+
+    let lm_ostium_angles = vec![5.0, 10.0,  35.0, 45.0];
+    let lm_ostium_point = get_midpoint_92("LMp");
+
+    let lm_bifurcation_angles = vec![-40.0, -50.0, -25.0, -40.0];
+    let lm_bifurcation_point  = get_midpoint_92("LMd");
+    
+    let lad_proximal_angles = vec![30.0, 45.0, -30.0, -40.0];
+    let lad_proximal_point  = get_midpoint_92("L1p");
+
+    let lad_d1_angles = vec![-35.0, -45.0, 25.0, 35.0];
+    let lad_d1_point  = get_midpoint_92("D1o");
+
+    //let lcx_proximal_angles = vec![30.0, 45.0, -30.0, -40.0];
+    let lcx_proximal_point = get_midpoint_92("C1p");
+
+    let lcx_om_angles = vec![-15.0, -35.0, -25.0, -41.0];
+    let lcx_om_point  = get_midpoint_92("OMp");
+    
+      match rotate_rao_lao {
+       
+       _ if rotate_rao_lao  > &lm_ostium_angles[0] && rotate_rao_lao < &lm_ostium_angles[1]
+            && rotate_cr_ca >  &lm_ostium_angles[2 ]  && rotate_cr_ca <  &lm_ostium_angles[3 ]
+              =>  draw_marker(lm_ostium_point, rotate_rao_lao, rotate_cr_ca),
+   
+    _ if rotate_rao_lao <  &lm_bifurcation_angles[0] && rotate_rao_lao > &lm_bifurcation_angles[1] 
+         && rotate_cr_ca < &lm_bifurcation_angles[2] && rotate_cr_ca >  &lm_bifurcation_angles[3]
+              =>  draw_marker(lm_bifurcation_point, rotate_rao_lao, rotate_cr_ca ),
+    
+     _ if rotate_rao_lao >  &lad_proximal_angles[0] && rotate_rao_lao < &lad_proximal_angles[1] 
+              && rotate_cr_ca <  &lad_proximal_angles[2] && rotate_cr_ca >  &lad_proximal_angles[3]
+                     => {
+                     draw_marker(lad_proximal_point, rotate_rao_lao, rotate_cr_ca);
+                     draw_marker(lcx_proximal_point, rotate_rao_lao, rotate_cr_ca) 
+                    },
+   
+   
+       _ if rotate_rao_lao <  &lad_d1_angles[0] && rotate_rao_lao >  &lad_d1_angles[1] 
+                     && rotate_cr_ca >  &lad_d1_angles[2] && rotate_cr_ca <  &lad_d1_angles[3]
+                            =>  draw_marker(lad_d1_point, rotate_rao_lao, rotate_cr_ca),
+
+    _ if rotate_rao_lao <  &lcx_om_angles[0] && rotate_rao_lao > &lcx_om_angles[1] 
+                            && rotate_cr_ca < &lcx_om_angles[2] && rotate_cr_ca >  &lcx_om_angles[3]
+                                 =>  draw_marker(lcx_om_point, rotate_rao_lao, rotate_cr_ca ),
+
+      _ => println!("something else")
+    }
+    
+    
+
+}//set_market
+
+fn draw_marker(center: Vec<f32>, rotate_rao_lao: &f32, rotate_cr_ca: &f32){
+    let mut j = 0;
+
+   unsafe{
+ 
+    let polyline = circle(&0.5, 32);
+   
+   
+
+
+   glPushMatrix();
+   glTranslatef(-0.2, 0.2, 0.0);
+   glRotatef(*rotate_cr_ca, 1.0, 0.0, 0.0); //x
+   glRotatef(*rotate_rao_lao, 0.0, 1.0, 0.0); //y axis
+      
+   glScalef(0.1, 0.1, 0.1); 
+  // glColor3ub(231,41,138); //red 
+   glColor3ub(171,217,233); //red 
+   glPointSize(10.0 * SIZE_UNIT * 0.8);
+   
+   glBegin(GL_POINTS );
+   glVertex3f(center[0], center[1], center[2]);
+   glEnd();
+   /***********************************/
+  /* 
+   glPushMatrix();
+   glColor3f(1.0, 1.0, 1.0); //white
+   glPointSize(1.0 * SIZE_UNIT * 0.7);
+   glBegin(GL_POINTS);
+   while j < polyline.coords().len()  {
+          glVertex3f(
+           polyline.coords()[j][0],
+           polyline.coords()[j][1],
+           0.0
+           );
+       j = j + 1;
+    
+   }
+   glEnd();
+   glPopMatrix();
+*/
+   /**************************************/
+   glFlush();
+   glPopMatrix();
+
+/*
+  
+   glPushMatrix();
+  
+   glTranslatef(center[0], center[1], center[2]);
+   glRotatef(*rotate_cr_ca, 1.0, 0.0, 0.0); //x
+   glRotatef(*rotate_rao_lao, 0.0, 1.0, 0.0); //y axis
+      
+   glScalef(0.1, 0.1, 0.1); 
+   glColor3f(1.0, 1.0, 1.0); //white
+   glPointSize(8.0 * SIZE_UNIT * 0.7);
+
+   glBegin(GL_POINTS);
+   while j < polyline.coords().len()  {
+          glVertex3f(
+           polyline.coords()[j][0],
+           polyline.coords()[j][1],
+           0.0
+           );
+       j = j + 1;
+    
+   }
+   glEnd();
+   glFlush();
+   glPopMatrix();
+*/
+
+
+
+  
+ }//usafe
+
+}//draw_marker
