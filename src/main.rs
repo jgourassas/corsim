@@ -83,7 +83,7 @@ pub fn main() {
         FLTK_WINDOW_HEIGHT - 275,
         30,
         240,
-        "↑Lao/Rao↓",
+        "-↑Lao/Rao↓+",
     );
     /*
     Philips XPER FD10C R7.0.4
@@ -140,7 +140,7 @@ pub fn main() {
         FLTK_WINDOW_HEIGHT - 60,
         240,
         30,
-        "←Cra/Cau→",
+        "+ ←Cra/Cau→ -",
     );
     widget_cr_ca.set_color(Color::from_rgb(203, 213, 232));
 
@@ -638,21 +638,52 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
     
     let lad_proximal_angles = vec![30.0, 45.0, -30.0, -40.0];
     let lad_proximal_point  = get_midpoint_92("L1p");
-
+  
+    //let lad_mid_angles = vec![5.0,  10.0 , 35.0, 45.0];
+    let lad_mid_point  = get_midpoint_92("L3p");
+  
     let lad_d1_angles = vec![-35.0, -45.0, 25.0, 35.0];
     let lad_d1_point  = get_midpoint_92("D1o");
+     
+     let lad_distal_angles = vec![30.0, 35.0 , 30.0, 40.0];
+     let lad_distal_point  = get_midpoint_92("L4p");
 
-    //let lcx_proximal_angles = vec![30.0, 45.0, -30.0, -40.0];
     let lcx_proximal_point = get_midpoint_92("C1p");
+   
+    // LCx Distal   | ---   | RAO 5 - 10     | CRA 35 - 45     |
+   // let lcx_distal_angles = vec![5.0, 10.0 , 35.0, 45.0];
+    let lcx_distal_point  = get_midpoint_92("C3d");
 
     let lcx_om_angles = vec![-15.0, -35.0, -25.0, -41.0];
     let lcx_om_point  = get_midpoint_92("OMp");
     
-      match rotate_rao_lao {
+    // RCA Ostium    |LAO 64, CAU 51       | LAO 49 - 79        | CAU 42 - 61 |     
+    //let rca_ostium = vec![30.0, 35.0 , 30.0, 40.0];
+    let rca_ostium_point  = get_midpoint_92("R1p");
+    
+    //RCA Proximal     | LAO 79, CRA 41 | LAO 74 - 84 | CRA 37 - 45     | 
+    let rca_proximal_angles = vec![-74.0, -84.0 , -37.0, -45.0];
+    let rca_proximal_point  = get_midpoint_92("R1m");
+
+    //RCA Mid     | --- | Lateral | CAU 10 - 30     | 
+    let rca_mid_angles = vec![-70.0, -90.0 , -10.0, -30.0];
+    let rca_mid_point  = get_midpoint_92("R2m");
+
+     //RCA CRUX     | ---               | RAO 5 - 10          | CRA 35 - 45 |  
+     let rca_crux_angles = vec![5.0, 10.0 , 35.0, 45.0];
+     let rca_crux_point  = get_midpoint_92("R4d");
+
+    match rotate_rao_lao {
        
        _ if rotate_rao_lao  > &lm_ostium_angles[0] && rotate_rao_lao < &lm_ostium_angles[1]
             && rotate_cr_ca >  &lm_ostium_angles[2 ]  && rotate_cr_ca <  &lm_ostium_angles[3 ]
-              =>  draw_marker(lm_ostium_point, rotate_rao_lao, rotate_cr_ca),
+              => { draw_marker(lm_ostium_point, rotate_rao_lao, rotate_cr_ca);
+                draw_marker(lad_mid_point, rotate_rao_lao, rotate_cr_ca);
+                draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca );
+                draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca )
+
+
+            },
    
     _ if rotate_rao_lao <  &lm_bifurcation_angles[0] && rotate_rao_lao > &lm_bifurcation_angles[1] 
          && rotate_cr_ca < &lm_bifurcation_angles[2] && rotate_cr_ca >  &lm_bifurcation_angles[3]
@@ -665,15 +696,37 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
                      draw_marker(lcx_proximal_point, rotate_rao_lao, rotate_cr_ca) 
                     },
    
-   
-       _ if rotate_rao_lao <  &lad_d1_angles[0] && rotate_rao_lao >  &lad_d1_angles[1] 
+           _ if rotate_rao_lao <  &lad_d1_angles[0] && rotate_rao_lao >  &lad_d1_angles[1] 
                      && rotate_cr_ca >  &lad_d1_angles[2] && rotate_cr_ca <  &lad_d1_angles[3]
                             =>  draw_marker(lad_d1_point, rotate_rao_lao, rotate_cr_ca),
-
-    _ if rotate_rao_lao <  &lcx_om_angles[0] && rotate_rao_lao > &lcx_om_angles[1] 
+    
+      _ if rotate_rao_lao >  &lad_distal_angles[0] && rotate_rao_lao <  &lad_distal_angles[1] 
+                            && rotate_cr_ca >  &lad_distal_angles[2] && rotate_cr_ca <  &lad_distal_angles[3]
+                                   
+                            => { 
+                             draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
+                            draw_marker(rca_ostium_point, rotate_rao_lao, rotate_cr_ca);
+                            },
+     /*
+       _ if rotate_rao_lao >  &lcx_distal_angles[0] && rotate_rao_lao <  &lcx_distal_angles[1] 
+                                   && rotate_cr_ca >  &lcx_distal_angles[2] && rotate_cr_ca <  &lcx_distal_angles[3]
+                                          =>  draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca),
+          
+       */   
+        _ if rotate_rao_lao <  &lcx_om_angles[0] && rotate_rao_lao > &lcx_om_angles[1] 
                             && rotate_cr_ca < &lcx_om_angles[2] && rotate_cr_ca >  &lcx_om_angles[3]
                                  =>  draw_marker(lcx_om_point, rotate_rao_lao, rotate_cr_ca ),
 
+        _ if rotate_rao_lao <  &rca_proximal_angles[0] && rotate_rao_lao > &rca_proximal_angles[1] 
+                                 && rotate_cr_ca < &rca_proximal_angles[2] && rotate_cr_ca >  &rca_proximal_angles[3]
+                                      =>  draw_marker(rca_proximal_point, rotate_rao_lao, rotate_cr_ca ),                            
+   _ if rotate_rao_lao <  &rca_mid_angles[0] && rotate_rao_lao > &rca_mid_angles[1] 
+                    && rotate_cr_ca < &rca_mid_angles[2] && rotate_cr_ca >  &rca_mid_angles[3]
+                                           =>  draw_marker(rca_mid_point, rotate_rao_lao, rotate_cr_ca ),  
+
+       _ if rotate_rao_lao >  &rca_crux_angles[0] && rotate_rao_lao < &rca_crux_angles[1] 
+                    && rotate_cr_ca > &rca_crux_angles[2] && rotate_cr_ca <  &rca_crux_angles[3]
+                                           =>  draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca ),   
       _ => println!("something else")
     }
     
@@ -682,33 +735,21 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
 }//set_market
 
 fn draw_marker(center: Vec<f32>, rotate_rao_lao: &f32, rotate_cr_ca: &f32){
-    let mut j = 0;
-
+  let mut j = 0;
    unsafe{
  
-    let polyline = circle(&0.5, 32);
-   
-   
-
+    let polyline = circle(&0.6, 64);
 
    glPushMatrix();
    glTranslatef(-0.2, 0.2, 0.0);
    glRotatef(*rotate_cr_ca, 1.0, 0.0, 0.0); //x
    glRotatef(*rotate_rao_lao, 0.0, 1.0, 0.0); //y axis
-      
    glScalef(0.1, 0.1, 0.1); 
-  // glColor3ub(231,41,138); //red 
-   glColor3ub(171,217,233); //red 
-   glPointSize(10.0 * SIZE_UNIT * 0.8);
-   
-   glBegin(GL_POINTS );
-   glVertex3f(center[0], center[1], center[2]);
-   glEnd();
    /***********************************/
-  /* 
    glPushMatrix();
    glColor3f(1.0, 1.0, 1.0); //white
-   glPointSize(1.0 * SIZE_UNIT * 0.7);
+   glTranslatef(center[0], center[1], center[2]);
+   glPointSize(1.0 * SIZE_UNIT * 0.3);
    glBegin(GL_POINTS);
    while j < polyline.coords().len()  {
           glVertex3f(
@@ -721,38 +762,10 @@ fn draw_marker(center: Vec<f32>, rotate_rao_lao: &f32, rotate_cr_ca: &f32){
    }
    glEnd();
    glPopMatrix();
-*/
+
    /**************************************/
    glFlush();
    glPopMatrix();
-
-/*
-  
-   glPushMatrix();
-  
-   glTranslatef(center[0], center[1], center[2]);
-   glRotatef(*rotate_cr_ca, 1.0, 0.0, 0.0); //x
-   glRotatef(*rotate_rao_lao, 0.0, 1.0, 0.0); //y axis
-      
-   glScalef(0.1, 0.1, 0.1); 
-   glColor3f(1.0, 1.0, 1.0); //white
-   glPointSize(8.0 * SIZE_UNIT * 0.7);
-
-   glBegin(GL_POINTS);
-   while j < polyline.coords().len()  {
-          glVertex3f(
-           polyline.coords()[j][0],
-           polyline.coords()[j][1],
-           0.0
-           );
-       j = j + 1;
-    
-   }
-   glEnd();
-   glFlush();
-   glPopMatrix();
-*/
-
 
 
   
