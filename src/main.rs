@@ -23,7 +23,17 @@ const MARGIN_RIGHT: i32 = 220;
 const MARGIN_LEFT: i32 = 10;
 const SIZE_UNIT: f32 = 2.5;
 
+const FLTK_WINDOW_WIDTH: i32 = 1650 - MARGIN_LEFT - MARGIN_RIGHT;
+const FLTK_WINDOW_HEIGHT: i32 = 1200 - MARGIN_TOP - MARGIN_BOTTOM;
+
+//const GL_WINDOW_WIDTH: i32 = FLTK_WINDOW_WIDTH - 100;
+//const GL_WINDOW_HEIGHT: i32 = FLTK_WINDOW_HEIGHT - 100;
+
+const GL_WINDOW_WIDTH: i32 = FLTK_WINDOW_WIDTH - 250;
+const GL_WINDOW_HEIGHT: i32 = FLTK_WINDOW_HEIGHT - 100;
+const OUTER_RADIOUS: f64 = 0.85;
 mod simcor_data_functions;
+
 use simcor_data_functions::{
     get_diameter, get_midpoint_92, get_midpoint_color_92, get_segment_points_92,
     get_segments_names_92,
@@ -41,12 +51,7 @@ use simcor_data_functions::{
 
 //const FLTK_WINDOW_WIDTH: i32 = 2048 - MARGIN_LEFT - MARGIN_RIGHT;
 //const FLTK_WINDOW_HEIGHT: i32 = 1536 - MARGIN_TOP - MARGIN_BOTTOM;
-const FLTK_WINDOW_WIDTH: i32 = 1600 - MARGIN_LEFT - MARGIN_RIGHT;
-const FLTK_WINDOW_HEIGHT: i32 = 1200 - MARGIN_TOP - MARGIN_BOTTOM;
 
-const GL_WINDOW_WIDTH: i32 = FLTK_WINDOW_WIDTH - 100;
-const GL_WINDOW_HEIGHT: i32 = FLTK_WINDOW_HEIGHT - 100;
-const OUTER_RADIOUS: f64 = 0.85;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Message {
@@ -65,7 +70,7 @@ pub fn main() {
         100,
         FLTK_WINDOW_WIDTH,
         FLTK_WINDOW_HEIGHT,
-        "CORONARY Views. By John Gkourasas ",
+        "CORONARY Views. By John Gkourasas (J. Gourassas)",
     );
 
     //let mut frame = Frame::new(0, 0, FLTK_WINDOW_WIDTH,  FLTK_WINDOW_HEIGHT, "FRAME");
@@ -80,10 +85,10 @@ pub fn main() {
     */
     let mut widget_rao_lao = NiceSlider::new(
         FLTK_WINDOW_WIDTH - 80,
-        FLTK_WINDOW_HEIGHT - 275,
+        FLTK_WINDOW_HEIGHT - 350,
         30,
         240,
-        "-↑Lao/Rao↓+",
+        "⇑Lao/Rao⇩",
     );
     /*
     Philips XPER FD10C R7.0.4
@@ -104,17 +109,18 @@ pub fn main() {
     in the direction perpendicular  to the patient's chest. +90 degrees corresponds to the cranial direction.
     The Secondary Positioner Angle range is -90 to + 90 degrees.
     */
-    widget_rao_lao.set_color(Color::from_rgb(203, 213, 232)); //
+   // widget_rao_lao.set_color(Color::from_rgb(203, 213, 232)); //
+    widget_rao_lao.set_color(Color::from_rgb(158,188,218)); //
     widget_rao_lao.set_frame(FrameType::RoundUpBox);
     widget_rao_lao.set_bounds(-90.0, 90.0);
     //widget_rao_lao.set_bounds(90.0, -90.0);
     widget_rao_lao.set_step(1.0, 1);
-    widget_rao_lao.set_label_size(22);
+    widget_rao_lao.set_label_size(18);
     widget_rao_lao.set_trigger(CallbackTrigger::Changed);
     let widget_rao_lao_c = widget_rao_lao.clone();
 
     let mut frame_rao_lao =
-        Frame::new(FLTK_WINDOW_WIDTH - 60, FLTK_WINDOW_HEIGHT - 210, 70, 40, "");
+        Frame::new(FLTK_WINDOW_WIDTH - 60, FLTK_WINDOW_HEIGHT - 250, 70, 40, "");
     frame_rao_lao.set_color(Color::from_rgb(39, 45, 206)); //blue
     frame_rao_lao.set_label_size(22);
     /*
@@ -135,6 +141,7 @@ pub fn main() {
             "Cr-Ca",
         );
     */
+    /*
     let mut widget_cr_ca = HorNiceSlider::new(
         FLTK_WINDOW_WIDTH - 380,
         FLTK_WINDOW_HEIGHT - 60,
@@ -142,39 +149,50 @@ pub fn main() {
         30,
         "+ ←Cra/Cau→ -",
     );
-    widget_cr_ca.set_color(Color::from_rgb(203, 213, 232));
-
+*/
+let mut widget_cr_ca = NiceSlider::new(
+    FLTK_WINDOW_WIDTH - 200,
+    FLTK_WINDOW_HEIGHT - 350,
+    30,
+    240,
+    "↑Cra/Cau↓",
+);
+//    widget_cr_ca.set_color(Color::from_rgb(203, 213, 232));
+widget_cr_ca.set_color(Color::from_rgb(136,86,167));
     widget_cr_ca.set_frame(FrameType::RoundUpBox);
 
     widget_cr_ca.set_bounds(90.0, -90.0);
     widget_cr_ca.set_step(1.0, 1);
-    widget_cr_ca.set_label_size(22);
+    widget_cr_ca.set_label_size(18);
 
     let widget_cr_ca_c = widget_cr_ca.clone();
 
-    let mut frame_cr_ca = Frame::new(FLTK_WINDOW_WIDTH - 300, FLTK_WINDOW_HEIGHT - 95, 70, 40, "");
+  //  let mut frame_cr_ca = Frame::new(FLTK_WINDOW_WIDTH - 300, FLTK_WINDOW_HEIGHT - 95, 70, 40, "");
+    let mut frame_cr_ca = Frame::new(FLTK_WINDOW_WIDTH - 255, FLTK_WINDOW_HEIGHT - 250, 70, 40, "");
+
     frame_cr_ca.set_color(Color::from_rgb(39, 206, 201)); //green
     frame_cr_ca.set_label_size(22);
 
     let mut but_quit = Button::new(
-        FLTK_WINDOW_WIDTH - 80,
-        FLTK_WINDOW_HEIGHT - 380,
+        FLTK_WINDOW_WIDTH - 100,
+        FLTK_WINDOW_HEIGHT - 400,
         70,
         40,
         "Quit➤",
     );
     but_quit.set_color(Color::from_rgb(183, 19, 19)); //red
+   // but_quit.set_color(Color::from_rgb(102,194,165)); //green
     but_quit.set_callback(Box::new(move || cb_quit()));
 
     let mut but_ap_view = Button::new(
-        FLTK_WINDOW_WIDTH - 480,
-        FLTK_WINDOW_HEIGHT - 60,
+        FLTK_WINDOW_WIDTH - 220,
+        FLTK_WINDOW_HEIGHT - 400,
         70,
         40,
-        "P-A View",
+        "A-P View",
     );
-    but_ap_view.set_color(Color::from_rgb(179, 205, 227)); //blue light
-
+    //but_ap_view.set_color(Color::from_rgb(179, 205, 227)); //blue light
+    but_ap_view.set_color(Color::from_rgb(102,194,165)); //blue light
     let mut gl_wind =
         window::GlWindow::new(10, 10, GL_WINDOW_WIDTH, GL_WINDOW_HEIGHT, "GL WINDOW!");
     gl_wind.make_resizable(true);
@@ -260,20 +278,7 @@ fn draw_scene(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
     } //while
     draw_machine(rotate_rao_lao, rotate_cr_ca);
     set_marker(rotate_rao_lao, rotate_cr_ca);
-
-
-    //draw_axis(rotate_rao_lao, rotate_cr_ca);
-    //draw_floor();
-
-    // draw_coronaries_88(rotate_rao_lao, rotate_cr_ca);
-    /********************************* */
-    //calc_midpoint_distance("L_OSTIUM - LMm",
-    //    1.6,
-    //    0.7,
-    //    -43.0,
-    //    80.0,
-    //    24.0,
-    //    4.0);
+    draw_frame();
     /**************************************** */
 } //draw_scene
 
@@ -385,6 +390,8 @@ fn draw_as_polyline_segment(
     _midpoint_name: &str,
 ) {
     let polyline = Polyline::new(points.to_vec(), None);
+    //println!("Polyline: {:?}   ", polyline);
+
     unsafe {
         glPushMatrix();
 
@@ -460,8 +467,8 @@ fn draw_arm(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
         glRotatef(*rotate_rao_lao, -1.0, 0.0, 0.0); //x axis
 
         //Semi Tranparent
-        glColor4f(252.0, 146.0, 114.0, 0.2);
-
+        //glColor4f(252.0, 146.0, 114.0, 0.2);
+        glColor4ub(224,236,244, 2);
         gluPartialDisk(
             quadric,
             OUTER_RADIOUS,
@@ -476,7 +483,7 @@ fn draw_arm(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
         draw_collimator();
         x_ray_beam();
         draw_digital_camera();
-        //draw_frame();
+      
         /*********************************************** */
 
         glPopMatrix();
@@ -484,29 +491,30 @@ fn draw_arm(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
 } //draw_arm
 
 /************************************************/
-/*
+
 fn draw_frame(){
-    let mut x1 = 10.0;
-    let mut y1 = 10.0;
-    let mut x2 = 20.0;
-    let mut y2 = 20.0;
-
-    x1 = 2.0 * x1 / GL_WINDOW_WIDTH as f32 - 1.0;
-    y1 = 2.0 * y1 / GL_WINDOW_HEIGHT as f32 - 1.0;
-
-    x2 = 2.0 * x2 / GL_WINDOW_WIDTH  as f32 - 1.0;
-    y2 = 2.0 * y2 / GL_WINDOW_HEIGHT as f32 - 1.0;
-
-
-    unsafe{
+  unsafe{
 
    glPushMatrix();
-
-   glTranslatef(0.2, 0.0, 0.0);
+   glLineWidth(10.0);
+   glColor3ub(247,247,247);
+  
+   
    glBegin(GL_LINES);
-   glLineWidth(22.2);
-   glVertex2f(x1, y1);
-   glVertex2f(x2, y2);
+   
+   glVertex2f(-0.98, -0.98);
+   glVertex2f(0.98, -0.98);
+   
+   glVertex2f(-0.98, -0.98);
+   glVertex2f(-0.98, 0.98);
+
+   glVertex2f(-0.98, 0.98);
+   glVertex2f(0.98, 0.98);
+
+   glVertex2f(0.98, 0.98);
+   glVertex2f(0.98, -0.98);
+
+  
    glEnd();
 
    glPopMatrix();
@@ -514,7 +522,7 @@ fn draw_frame(){
     }
 
 }//draw_frame
-*/
+
 /**********************************************************/
 fn x_ray_beam() {
     let mut i: usize = 0;
@@ -522,12 +530,12 @@ fn x_ray_beam() {
     unsafe {
         glPushMatrix();
         glTranslatef(0.2, 0.0, 0.0);
-        glColor3ub(252, 146, 114);
+        glColor4f(252.0, 146.0, 114.0, 0.7);
         glLineWidth(0.2);
         glBegin(GL_LINES);
         while i <= 8 {
-            glVertex3f(-0.22, -OUTER_RADIOUS as f32, 0.0);
-            glVertex3f(-0.22 + i as f32 * 0.01, 0.90, 0.0);
+            glVertex3f(-0.24, -OUTER_RADIOUS as f32, 0.0);
+            glVertex3f(-0.24 + i as f32 * 0.01, 0.80, 0.0);
             i += 1;
         }
         glEnd();
@@ -538,6 +546,9 @@ fn x_ray_beam() {
 
 fn draw_digital_camera() {
     unsafe {
+        
+       
+
         glPushMatrix();
 
         glTranslatef(0.0, OUTER_RADIOUS as f32, 0.0);
@@ -546,7 +557,8 @@ fn draw_digital_camera() {
 
         glBegin(GL_POLYGON);
         // Multi-colored side - FRONT
-        glColor3ub(128, 205, 193); //green light
+        glColor4f(224.0,224.0, 22.0, 0.6);
+    
         glVertex3f(-0.5, -0.5, -0.5); // P1
         glVertex3f(-0.5, 0.5, -0.5); // P2
         glVertex3f(0.5, 0.5, -0.5); // P3
@@ -554,7 +566,8 @@ fn draw_digital_camera() {
 
         // White side - BACK
         glBegin(GL_POLYGON);
-        glColor3ub(1, 133, 113); //green dark
+        //glColor4ub(1, 133, 113, 5); //dark
+        glColor4f(153.0,153.0, 153.0, 0.3);
         glVertex3f(0.5, -0.5, 0.5);
         glVertex3f(0.5, 0.5, 0.5);
         glVertex3f(-0.5, 0.5, 0.5);
@@ -563,7 +576,8 @@ fn draw_digital_camera() {
 
         // Purple side - RIGHT
         glBegin(GL_POLYGON);
-        glColor3ub(166, 97, 26); //green dark
+        //glColor4ub(166, 97, 26, 5); //green dark
+        glColor4f(153.0,153.0, 153.0, 0.3);
         glVertex3f(0.5, -0.5, -0.5);
         glVertex3f(0.5, 0.5, -0.5);
         glVertex3f(0.5, 0.5, 0.5);
@@ -572,7 +586,9 @@ fn draw_digital_camera() {
 
         // Green side - LEFT
         glBegin(GL_POLYGON);
-        glColor3ub(223, 194, 125);
+        //glColor4ub(223, 194, 125, 5);
+        glColor4f(153.0,153.0, 153.0, 0.3);
+
         glVertex3f(-0.5, -0.5, 0.5);
         glVertex3f(-0.5, 0.5, 0.5);
         glVertex3f(-0.5, 0.5, -0.5);
@@ -581,7 +597,8 @@ fn draw_digital_camera() {
 
         // Blue side - TOP
         glBegin(GL_POLYGON);
-        glColor3ub(203, 201, 22);
+        //glColor4ub(203, 201, 22, 5);
+        glColor4f(153.0,153.0, 153.0, 0.3);
         glVertex3f(0.5, 0.5, 0.5);
         glVertex3f(0.5, 0.5, -0.5);
         glVertex3f(-0.5, 0.5, -0.5);
@@ -590,7 +607,10 @@ fn draw_digital_camera() {
 
         // Red side - BOTTOM
         glBegin(GL_POLYGON);
-        glColor3ub(106, 81, 163);
+       // glColor4ub(106, 81, 163, 5);
+    
+        glColor4f(153.0,153.0, 153.0, 0.2);
+
         glVertex3f(0.5, -0.5, -0.5);
         glVertex3f(0.5, -0.5, 0.5);
         glVertex3f(-0.5, -0.5, 0.5);
@@ -599,6 +619,8 @@ fn draw_digital_camera() {
 
         glFlush();
         glPopMatrix();
+        //glLoadIdentity();
+
     } //unsafe
 } //draw_digital_cammer
   /**************************************************** */
@@ -607,16 +629,21 @@ fn draw_collimator() {
     let start = -(OUTER_RADIOUS + 0.1);
     unsafe {
         glPushMatrix();
-        glColor3ub(107, 174, 214); //Cyan blue
+        glDisable(GL_CULL_FACE);
+        glColor4f(107.0, 174.0, 214.0, 0.5); //Cyan blue
 
         //Trick
         glTranslatef(0.0, start as f32, 0.0);
         glRotatef(-90.0, 1.0, 0.0, 0.0);
+        
         glScalef(0.016, 0.016, 0.016);
 
         let quadric = gluNewQuadric();
         //gluCylinder(	GLUquadric* quad,GLdouble base,GLdouble top,GLdouble height,GLint slices,GLint stacks);
         gluCylinder(quadric, radius as f64, radius as f64 * 0.5, 10.0, 15, 20);
+        //glFlush();
+        glEnable(GL_CULL_FACE);
+
         glPopMatrix();
     } //unsafe
 } //draw_collimator
@@ -626,9 +653,6 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
  
     /**********vec_rao_lao / cr_caudal********************* */
    //lao - caudal - 
-    //LM ostium rao 5-10/ cr 35-45 ---lao 30-45 cr 25-35
-    //LM bifurcation lao 40-50/ caudal 25-45(spider) --- rao 5-15/caudal 30
-
 
     let lm_ostium_angles = vec![5.0, 10.0,  35.0, 45.0];
     let lm_ostium_point = get_midpoint_92("LMp");
@@ -738,7 +762,7 @@ fn draw_marker(center: Vec<f32>, rotate_rao_lao: &f32, rotate_cr_ca: &f32){
   let mut j = 0;
    unsafe{
  
-    let polyline = circle(&0.6, 64);
+    let polyline = circle(&0.8, 64);
 
    glPushMatrix();
    glTranslatef(-0.2, 0.2, 0.0);
@@ -749,7 +773,7 @@ fn draw_marker(center: Vec<f32>, rotate_rao_lao: &f32, rotate_cr_ca: &f32){
    glPushMatrix();
    glColor3f(1.0, 1.0, 1.0); //white
    glTranslatef(center[0], center[1], center[2]);
-   glPointSize(1.0 * SIZE_UNIT * 0.3);
+   glPointSize(1.0 * SIZE_UNIT * 0.6);
    glBegin(GL_POINTS);
    while j < polyline.coords().len()  {
           glVertex3f(

@@ -1,5 +1,5 @@
 
-## CORSIM Is a simple and naive  simulation of Coronary Angiography.
+## CORSIM Is a learnging - simple and naive  simulation of Coronary Angiography.
 
 ### The porpuse of this software to show - Help students to be accustomized with coronary views
 

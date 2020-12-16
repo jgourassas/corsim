@@ -545,106 +545,106 @@ pub fn get_midpoint_color_92(point_name: &str) -> Vec<u8> {
     colors.insert(String::from("LMm"), vec![215, 25, 28]);
     colors.insert(String::from("LMd"), vec![215, 25, 28]);
 
-    colors.insert(String::from("L1p"), vec![166, 217, 106]);
-    colors.insert(String::from("L1m"), vec![166, 217, 106]);
-    colors.insert(String::from("L1d"), vec![166, 217, 106]);
+    colors.insert(String::from("L1p"), vec![217,239,139]);
+    colors.insert(String::from("L1m"), vec![217,239,139]);
+    colors.insert(String::from("L1d"), vec![217,239,139]);
 
-    colors.insert(String::from("L2p"), vec![166, 217, 106]);
-    colors.insert(String::from("L2m"), vec![166, 217, 106]);
-    colors.insert(String::from("L2d"), vec![166, 217, 106]);
+    colors.insert(String::from("L2p"), vec![217,239,139]);
+    colors.insert(String::from("L2m"), vec![217,239,139]);
+    colors.insert(String::from("L2d"), vec![217,239,139]);
 
-    colors.insert(String::from("L3p"), vec![166, 217, 106]);
-    colors.insert(String::from("L3m"), vec![166, 217, 106]);
-    colors.insert(String::from("L3d"), vec![166, 217, 106]);
+    colors.insert(String::from("L3p"), vec![217,239,139]);
+    colors.insert(String::from("L3m"), vec![217,239,139]);
+    colors.insert(String::from("L3d"), vec![217,239,139]);
 
-    colors.insert(String::from("L4p"), vec![166, 217, 106]);
-    colors.insert(String::from("L4m"), vec![166, 217, 106]);
-    colors.insert(String::from("L4d"), vec![166, 217, 106]);
+    colors.insert(String::from("L4p"), vec![217,239,139]);
+    colors.insert(String::from("L4m"), vec![217,239,139]);
+    colors.insert(String::from("L4d"), vec![217,239,139]);
 
-    colors.insert(String::from("C1p"), vec![255, 255, 191]);
-    colors.insert(String::from("C1m"), vec![255, 255, 191]);
-    colors.insert(String::from("C1d"), vec![255, 255, 191]);
+    colors.insert(String::from("C1p"), vec![254,224,139]);
+    colors.insert(String::from("C1m"), vec![254,224,139]);
+    colors.insert(String::from("C1d"), vec![254,224,139]);
 
-    colors.insert(String::from("C2p"), vec![255, 255, 191]);
-    colors.insert(String::from("C2m"), vec![255, 255, 191]);
-    colors.insert(String::from("C2d"), vec![255, 255, 191]);
+    colors.insert(String::from("C2p"), vec![254,224,139]);
+    colors.insert(String::from("C2m"), vec![254,224,139]);
+    colors.insert(String::from("C2d"), vec![254,224,139]);
 
-    colors.insert(String::from("C3p"), vec![255, 255, 191]);
-    colors.insert(String::from("C3m"), vec![255, 255, 191]);
-    colors.insert(String::from("C3d"), vec![255, 255, 191]);
+    colors.insert(String::from("C3p"), vec![254,224,139]);
+    colors.insert(String::from("C3m"), vec![254,224,139]);
+    colors.insert(String::from("C3d"), vec![254,224,139]);
 
-    colors.insert(String::from("C4p"), vec![255, 255, 191]);
-    colors.insert(String::from("C4m"), vec![255, 255, 191]);
-    colors.insert(String::from("C4d"), vec![255, 255, 191]);
+    colors.insert(String::from("C4p"), vec![254,224,139]);
+    colors.insert(String::from("C4m"), vec![254,224,139]);
+    colors.insert(String::from("C4d"), vec![254,224,139]);
 
-    colors.insert(String::from("R1p"), vec![253, 174, 97]);
-    colors.insert(String::from("R1m"), vec![253, 174, 97]);
-    colors.insert(String::from("R1d"), vec![253, 174, 97]);
+    colors.insert(String::from("R1p"), vec![252,141,89]);
+    colors.insert(String::from("R1m"), vec![252,141,89]);
+    colors.insert(String::from("R1d"), vec![252,141,89]);
 
-    colors.insert(String::from("R2p"), vec![253, 174, 97]);
-    colors.insert(String::from("R2m"), vec![253, 174, 97]);
-    colors.insert(String::from("R2d"), vec![253, 174, 97]);
+    colors.insert(String::from("R2p"), vec![252,141,89]);
+    colors.insert(String::from("R2m"), vec![252,141,89]);
+    colors.insert(String::from("R2d"), vec![252,141,89]);
 
-    colors.insert(String::from("R3p"), vec![253, 174, 97]);
-    colors.insert(String::from("R3m"), vec![253, 174, 97]);
-    colors.insert(String::from("R3d"), vec![253, 174, 97]);
+    colors.insert(String::from("R3p"), vec![252,141,89]);
+    colors.insert(String::from("R3m"), vec![252,141,89]);
+    colors.insert(String::from("R3d"), vec![252,141,89]);
 
-    colors.insert(String::from("R4p"), vec![253, 174, 97]);
-    colors.insert(String::from("R4m"), vec![253, 174, 97]);
-    colors.insert(String::from("R4d"), vec![253, 174, 97]);
+    colors.insert(String::from("R4p"), vec![252,141,89]);
+    colors.insert(String::from("R4m"), vec![252,141,89]);
+    colors.insert(String::from("R4d"), vec![252,141,89]);
 
-    colors.insert(String::from("S1p"), vec![166, 217, 106]);
-    colors.insert(String::from("S1m"), vec![166, 217, 106]);
-    colors.insert(String::from("S1d"), vec![166, 217, 106]);
+    colors.insert(String::from("S1p"), vec![217,239,139]);
+    colors.insert(String::from("S1m"), vec![217,239,139]);
+    colors.insert(String::from("S1d"), vec![217,239,139]);
 
-    colors.insert(String::from("S2p"), vec![166, 217, 106]);
-    colors.insert(String::from("S2m"), vec![166, 217, 106]);
-    colors.insert(String::from("S2d"), vec![166, 217, 106]);
+    colors.insert(String::from("S2p"), vec![217,239,139]);
+    colors.insert(String::from("S2m"), vec![217,239,139]);
+    colors.insert(String::from("S2d"), vec![217,239,139]);
 
-    colors.insert(String::from("S3p"), vec![166, 217, 106]);
-    colors.insert(String::from("S3m"), vec![166, 217, 106]);
-    colors.insert(String::from("S3d"), vec![166, 217, 106]);
+    colors.insert(String::from("S3p"), vec![217,239,139]);
+    colors.insert(String::from("S3m"), vec![217,239,139]);
+    colors.insert(String::from("S3d"), vec![217,239,139]);
 
-    colors.insert(String::from("D1p"), vec![166, 217, 106]);
-    colors.insert(String::from("D1m"), vec![166, 217, 106]);
-    colors.insert(String::from("D1d"), vec![166, 217, 106]);
+    colors.insert(String::from("D1p"), vec![217,239,139]);
+    colors.insert(String::from("D1m"), vec![217,239,139]);
+    colors.insert(String::from("D1d"), vec![217,239,139]);
 
-    colors.insert(String::from("D2p"), vec![166, 217, 106]);
-    colors.insert(String::from("D2m"), vec![166, 217, 106]);
+    colors.insert(String::from("D2p"), vec![217,239,139]);
+    colors.insert(String::from("D2m"), vec![217,239,139]);
     colors.insert(String::from("D2d"), vec![215, 25, 28]);
 
-    colors.insert(String::from("D3p"), vec![166, 217, 106]);
-    colors.insert(String::from("D3m"), vec![166, 217, 106]);
+    colors.insert(String::from("D3p"), vec![217,239,139]);
+    colors.insert(String::from("D3m"), vec![217,239,139]);
     colors.insert(String::from("D3d"), vec![215, 25, 28]);
 
     colors.insert(String::from("MRp"), vec![203, 201, 226]);
     colors.insert(String::from("MRm"), vec![203, 201, 226]);
     colors.insert(String::from("MRd"), vec![203, 201, 226]);
 
-    colors.insert(String::from("OMp"), vec![255, 255, 191]);
-    colors.insert(String::from("OMm"), vec![255, 255, 191]);
-    colors.insert(String::from("OMd"), vec![255, 255, 191]);
+    colors.insert(String::from("OMp"), vec![254,224,139]);
+    colors.insert(String::from("OMm"), vec![254,224,139]);
+    colors.insert(String::from("OMd"), vec![254,224,139]);
 
 //    segments.insert(String::from("M3"), vec!["C3p", "M3o", "M3p", "M3m"]); //M3 MARGINAL FROM LCX
     
 
 
-    colors.insert(String::from("OAo"), vec![255, 255, 191]);
-    colors.insert(String::from("OAp"), vec![255, 255, 191]);
-    colors.insert(String::from("OAm"), vec![255, 255, 191]);
+    colors.insert(String::from("OAo"), vec![254,224,139]);
+    colors.insert(String::from("OAp"), vec![254,224,139]);
+    colors.insert(String::from("OAm"), vec![254,224,139]);
     
 
-    colors.insert(String::from("M1p"), vec![255, 255, 191]);
-    colors.insert(String::from("M1m"), vec![255, 255, 191]);
-    colors.insert(String::from("M1d"), vec![255, 255, 191]);
+    colors.insert(String::from("M1p"), vec![254,224,139]);
+    colors.insert(String::from("M1m"), vec![254,224,139]);
+    colors.insert(String::from("M1d"), vec![254,224,139]);
 
-    colors.insert(String::from("M2p"), vec![255, 255, 191]);
-    colors.insert(String::from("M2m"), vec![255, 255, 191]);
-    colors.insert(String::from("M2d"), vec![255, 255, 191]);
+    colors.insert(String::from("M2p"), vec![254,224,139]);
+    colors.insert(String::from("M2m"), vec![254,224,139]);
+    colors.insert(String::from("M2d"), vec![254,224,139]);
 
-    colors.insert(String::from("M3o"), vec![255, 255, 191]);
-    colors.insert(String::from("M3p"), vec![255, 255, 191]);
-    colors.insert(String::from("M3m"), vec![255, 255, 191]);
+    colors.insert(String::from("M3o"), vec![254,224,139]);
+    colors.insert(String::from("M3p"), vec![254,224,139]);
+    colors.insert(String::from("M3m"), vec![254,224,139]);
 
     colors.insert(String::from("CPp"), vec![171, 217, 233]);
     colors.insert(String::from("CPm"), vec![171, 217, 233]);
@@ -654,17 +654,17 @@ pub fn get_midpoint_color_92(point_name: &str) -> Vec<u8> {
     colors.insert(String::from("CIp"), vec![215, 25, 28]);
     colors.insert(String::from("CIm"), vec![215, 25, 28]);
 
-    colors.insert(String::from("RDo"), vec![253, 174, 97]);
-    colors.insert(String::from("RDp"), vec![253, 174, 97]);
-    colors.insert(String::from("RDm"), vec![253, 174, 97]);
+    colors.insert(String::from("RDo"), vec![252,141,89]);
+    colors.insert(String::from("RDp"), vec![252,141,89]);
+    colors.insert(String::from("RDm"), vec![252,141,89]);
 
     colors.insert(String::from("RIo"), vec![215, 25, 28]);
-    colors.insert(String::from("RIp"), vec![253, 174, 97]);
+    colors.insert(String::from("RIp"), vec![252,141,89]);
     colors.insert(String::from("RIm"), vec![215, 25, 28]);
 
-    colors.insert(String::from("RPo"), vec![253, 174, 97]);
-    colors.insert(String::from("RPp"), vec![253, 174, 97]);
-    colors.insert(String::from("RPm"), vec![253, 174, 97]);
+    colors.insert(String::from("RPo"), vec![252,141,89]);
+    colors.insert(String::from("RPp"), vec![252,141,89]);
+    colors.insert(String::from("RPm"), vec![252,141,89]);
 
     let point = point_name.trim().to_string();
     let color = colors.get(&point);
