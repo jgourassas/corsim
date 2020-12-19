@@ -10,11 +10,10 @@ extern crate csv;
 extern crate nalgebra as na;
 use na::Point3;
 extern crate ncollide3d; // If you need 3D.
-use ncollide3d::shape::Polyline;
 use ncollide2d::procedural::circle;
+use ncollide3d::shape::Polyline;
 
 /********************************* */
-
 
 /**************************************/
 const MARGIN_TOP: i32 = 50;
@@ -31,12 +30,19 @@ const FLTK_WINDOW_HEIGHT: i32 = 1200 - MARGIN_TOP - MARGIN_BOTTOM;
 
 const GL_WINDOW_WIDTH: i32 = FLTK_WINDOW_WIDTH - 250;
 const GL_WINDOW_HEIGHT: i32 = FLTK_WINDOW_HEIGHT - 100;
+
+const FRAME_INFO_X: i32 = GL_WINDOW_WIDTH + 10;
+const FRAME_INFO_Y: i32 = MARGIN_TOP;
+
+const FRAME_INFO_WIDTH: i32 = FLTK_WINDOW_WIDTH - (GL_WINDOW_WIDTH + 12);
+const FRAME_INFO_HEIGHT: i32 = GL_WINDOW_HEIGHT - 370;
+
 const OUTER_RADIOUS: f64 = 0.85;
 mod simcor_data_functions;
 
 use simcor_data_functions::{
     get_diameter, get_midpoint_92, get_midpoint_color_92, get_segment_points_92,
-    get_segments_names_92,
+    get_segments_names_92, get_optimal_views, 
 };
 
 //const SIZE_UNIT: f32 = 2.0;
@@ -51,7 +57,6 @@ use simcor_data_functions::{
 
 //const FLTK_WINDOW_WIDTH: i32 = 2048 - MARGIN_LEFT - MARGIN_RIGHT;
 //const FLTK_WINDOW_HEIGHT: i32 = 1536 - MARGIN_TOP - MARGIN_BOTTOM;
-
 
 #[derive(Debug, Clone, Copy)]
 pub enum Message {
@@ -109,8 +114,8 @@ pub fn main() {
     in the direction perpendicular  to the patient's chest. +90 degrees corresponds to the cranial direction.
     The Secondary Positioner Angle range is -90 to + 90 degrees.
     */
-   // widget_rao_lao.set_color(Color::from_rgb(203, 213, 232)); //
-    widget_rao_lao.set_color(Color::from_rgb(158,188,218)); //
+    // widget_rao_lao.set_color(Color::from_rgb(203, 213, 232)); //
+    widget_rao_lao.set_color(Color::from_rgb(158, 188, 218)); //
     widget_rao_lao.set_frame(FrameType::RoundUpBox);
     widget_rao_lao.set_bounds(-90.0, 90.0);
     //widget_rao_lao.set_bounds(90.0, -90.0);
@@ -123,6 +128,7 @@ pub fn main() {
         Frame::new(FLTK_WINDOW_WIDTH - 60, FLTK_WINDOW_HEIGHT - 250, 70, 40, "");
     frame_rao_lao.set_color(Color::from_rgb(39, 45, 206)); //blue
     frame_rao_lao.set_label_size(22);
+
     /*
         let mut widget_cr_ca = Roller::new(
             FLTK_WINDOW_WIDTH - 60,
@@ -142,23 +148,23 @@ pub fn main() {
         );
     */
     /*
-    let mut widget_cr_ca = HorNiceSlider::new(
-        FLTK_WINDOW_WIDTH - 380,
-        FLTK_WINDOW_HEIGHT - 60,
-        240,
+        let mut widget_cr_ca = HorNiceSlider::new(
+            FLTK_WINDOW_WIDTH - 380,
+            FLTK_WINDOW_HEIGHT - 60,
+            240,
+            30,
+            "+ ←Cra/Cau→ -",
+        );
+    */
+    let mut widget_cr_ca = NiceSlider::new(
+        FLTK_WINDOW_WIDTH - 200,
+        FLTK_WINDOW_HEIGHT - 350,
         30,
-        "+ ←Cra/Cau→ -",
+        240,
+        "↑Cra/Cau↓",
     );
-*/
-let mut widget_cr_ca = NiceSlider::new(
-    FLTK_WINDOW_WIDTH - 200,
-    FLTK_WINDOW_HEIGHT - 350,
-    30,
-    240,
-    "↑Cra/Cau↓",
-);
-//    widget_cr_ca.set_color(Color::from_rgb(203, 213, 232));
-widget_cr_ca.set_color(Color::from_rgb(136,86,167));
+    //    widget_cr_ca.set_color(Color::from_rgb(203, 213, 232));
+    widget_cr_ca.set_color(Color::from_rgb(136, 86, 167));
     widget_cr_ca.set_frame(FrameType::RoundUpBox);
 
     widget_cr_ca.set_bounds(90.0, -90.0);
@@ -167,8 +173,14 @@ widget_cr_ca.set_color(Color::from_rgb(136,86,167));
 
     let widget_cr_ca_c = widget_cr_ca.clone();
 
-  //  let mut frame_cr_ca = Frame::new(FLTK_WINDOW_WIDTH - 300, FLTK_WINDOW_HEIGHT - 95, 70, 40, "");
-    let mut frame_cr_ca = Frame::new(FLTK_WINDOW_WIDTH - 255, FLTK_WINDOW_HEIGHT - 250, 70, 40, "");
+    //  let mut frame_cr_ca = Frame::new(FLTK_WINDOW_WIDTH - 300, FLTK_WINDOW_HEIGHT - 95, 70, 40, "");
+    let mut frame_cr_ca = Frame::new(
+        FLTK_WINDOW_WIDTH - 255,
+        FLTK_WINDOW_HEIGHT - 250,
+        70,
+        40,
+        "",
+    );
 
     frame_cr_ca.set_color(Color::from_rgb(39, 206, 201)); //green
     frame_cr_ca.set_label_size(22);
@@ -181,7 +193,7 @@ widget_cr_ca.set_color(Color::from_rgb(136,86,167));
         "Quit➤",
     );
     but_quit.set_color(Color::from_rgb(183, 19, 19)); //red
-   // but_quit.set_color(Color::from_rgb(102,194,165)); //green
+                                                      // but_quit.set_color(Color::from_rgb(102,194,165)); //green
     but_quit.set_callback(Box::new(move || cb_quit()));
 
     let mut but_ap_view = Button::new(
@@ -191,8 +203,86 @@ widget_cr_ca.set_color(Color::from_rgb(136,86,167));
         40,
         "A-P View",
     );
-    //but_ap_view.set_color(Color::from_rgb(179, 205, 227)); //blue light
-    but_ap_view.set_color(Color::from_rgb(102,194,165)); //blue light
+
+    //Frame -> FLTK BOX = X,Y W, H
+  //  const FLTK_WINDOW_HEIGHT: i32 = 1200 - MARGIN_TOP - MARGIN_BOTTOM;
+    let mut frame_info_view = Frame::new(
+        FRAME_INFO_X,
+        FRAME_INFO_Y,
+        FRAME_INFO_WIDTH,
+        FRAME_INFO_HEIGHT,
+        "Info View",
+    );
+    //  Frame::new(FLTK_WINDOW_WIDTH - 60, MARGIN_TOP - 150, FRAME_INFO_WIDTH , FRAME_INFO_HEIGHT, "Info View");
+    frame_info_view.set_color(Color::from_rgb(222, 235, 247)); //blue
+    frame_info_view.set_frame(FrameType::RFlatBox);
+    frame_info_view.set_label_size(20);
+    frame_info_view.set_label("Optimal Views");
+
+    let mut table = table::Table::new( FRAME_INFO_X, 
+        FRAME_INFO_Y + 20, 
+        FRAME_INFO_WIDTH - 10, 
+        FRAME_INFO_HEIGHT -10 , "OPTIMAL VIEWS");
+    table.set_rows(3);
+    table.set_row_header(true);
+    table.set_row_resize(true);
+    table.set_cols(3);
+    table.set_col_header(true);
+    table.set_col_width_all(230);
+    table.set_row_height_all(40);
+    
+    table.set_col_resize(true);
+   // table.selection_color(FL_YELLOW);
+    table.end();
+    // Called when the table is drawn then when it's redrawn due to events
+    let table_c = table.clone();
+  
+  
+    // Fl_Table calls this function to draw each visible cell in the table.
+    // draw_cell(TableContext context, int ROW=0, int COL=0, int X=0, int Y=0, int W=0, int H=0) 
+    
+    //We move cells to the heap by Box... 
+    
+    //  DrawHeader(const char *s, int X, int Y, int W, int H)
+
+    table.draw_cell(Box::new(move |ctx, row, col, x, y, w, h| match ctx {
+        table::TableContext::StartPage => draw::set_font(Font::Helvetica, 16),
+        table::TableContext::ColHeader => {
+            let header=  vec!["SITE", "Option A", "Option B"];
+            let idx = col as usize;
+            draw_header(&format!("{}", header[idx]), x, y, w, h);
+
+        } // Column titles
+        table::TableContext::RowHeader => draw_header(&format!("{}", row + 1), x, y, w, h), // Row titles
+        table::TableContext::Cell => {
+           
+           let max_col = 3;
+
+           
+            let sarray = get_optimal_views();
+            let idx = (row * max_col + col) as usize;
+
+            draw_data(
+                &format!("{}",  sarray[idx] ),
+                x,
+                y,
+                w,
+                h,
+                table_c.is_selected(row, col),
+            ); // Data in cells
+        }
+       
+        _ => (),
+    }));
+
+
+
+   //table.draw_cell(Box::new("LM");
+
+
+
+
+    but_ap_view.set_color(Color::from_rgb(102, 194, 165)); //blue light
     let mut gl_wind =
         window::GlWindow::new(10, 10, GL_WINDOW_WIDTH, GL_WINDOW_HEIGHT, "GL WINDOW!");
     gl_wind.make_resizable(true);
@@ -468,7 +558,7 @@ fn draw_arm(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
 
         //Semi Tranparent
         //glColor4f(252.0, 146.0, 114.0, 0.2);
-        glColor4ub(224,236,244, 2);
+        glColor4ub(224, 236, 244, 2);
         gluPartialDisk(
             quadric,
             OUTER_RADIOUS,
@@ -483,7 +573,7 @@ fn draw_arm(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
         draw_collimator();
         x_ray_beam();
         draw_digital_camera();
-      
+
         /*********************************************** */
 
         glPopMatrix();
@@ -492,36 +582,31 @@ fn draw_arm(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
 
 /************************************************/
 
-fn draw_frame(){
-  unsafe{
+fn draw_frame() {
+    unsafe {
+        glPushMatrix();
+        glLineWidth(10.0);
+        glColor3ub(247, 247, 247);
 
-   glPushMatrix();
-   glLineWidth(10.0);
-   glColor3ub(247,247,247);
-  
-   
-   glBegin(GL_LINES);
-   
-   glVertex2f(-0.98, -0.98);
-   glVertex2f(0.98, -0.98);
-   
-   glVertex2f(-0.98, -0.98);
-   glVertex2f(-0.98, 0.98);
+        glBegin(GL_LINES);
 
-   glVertex2f(-0.98, 0.98);
-   glVertex2f(0.98, 0.98);
+        glVertex2f(-0.98, -0.98);
+        glVertex2f(0.98, -0.98);
 
-   glVertex2f(0.98, 0.98);
-   glVertex2f(0.98, -0.98);
+        glVertex2f(-0.98, -0.98);
+        glVertex2f(-0.98, 0.98);
 
-  
-   glEnd();
+        glVertex2f(-0.98, 0.98);
+        glVertex2f(0.98, 0.98);
 
-   glPopMatrix();
+        glVertex2f(0.98, 0.98);
+        glVertex2f(0.98, -0.98);
 
+        glEnd();
+
+        glPopMatrix();
     }
-
-}//draw_frame
+} //draw_frame
 
 /**********************************************************/
 fn x_ray_beam() {
@@ -546,9 +631,6 @@ fn x_ray_beam() {
 
 fn draw_digital_camera() {
     unsafe {
-        
-       
-
         glPushMatrix();
 
         glTranslatef(0.0, OUTER_RADIOUS as f32, 0.0);
@@ -557,8 +639,8 @@ fn draw_digital_camera() {
 
         glBegin(GL_POLYGON);
         // Multi-colored side - FRONT
-        glColor4f(224.0,224.0, 22.0, 0.6);
-    
+        glColor4f(224.0, 224.0, 22.0, 0.6);
+
         glVertex3f(-0.5, -0.5, -0.5); // P1
         glVertex3f(-0.5, 0.5, -0.5); // P2
         glVertex3f(0.5, 0.5, -0.5); // P3
@@ -567,7 +649,7 @@ fn draw_digital_camera() {
         // White side - BACK
         glBegin(GL_POLYGON);
         //glColor4ub(1, 133, 113, 5); //dark
-        glColor4f(153.0,153.0, 153.0, 0.3);
+        glColor4f(153.0, 153.0, 153.0, 0.3);
         glVertex3f(0.5, -0.5, 0.5);
         glVertex3f(0.5, 0.5, 0.5);
         glVertex3f(-0.5, 0.5, 0.5);
@@ -577,7 +659,7 @@ fn draw_digital_camera() {
         // Purple side - RIGHT
         glBegin(GL_POLYGON);
         //glColor4ub(166, 97, 26, 5); //green dark
-        glColor4f(153.0,153.0, 153.0, 0.3);
+        glColor4f(153.0, 153.0, 153.0, 0.3);
         glVertex3f(0.5, -0.5, -0.5);
         glVertex3f(0.5, 0.5, -0.5);
         glVertex3f(0.5, 0.5, 0.5);
@@ -587,7 +669,7 @@ fn draw_digital_camera() {
         // Green side - LEFT
         glBegin(GL_POLYGON);
         //glColor4ub(223, 194, 125, 5);
-        glColor4f(153.0,153.0, 153.0, 0.3);
+        glColor4f(153.0, 153.0, 153.0, 0.3);
 
         glVertex3f(-0.5, -0.5, 0.5);
         glVertex3f(-0.5, 0.5, 0.5);
@@ -598,7 +680,7 @@ fn draw_digital_camera() {
         // Blue side - TOP
         glBegin(GL_POLYGON);
         //glColor4ub(203, 201, 22, 5);
-        glColor4f(153.0,153.0, 153.0, 0.3);
+        glColor4f(153.0, 153.0, 153.0, 0.3);
         glVertex3f(0.5, 0.5, 0.5);
         glVertex3f(0.5, 0.5, -0.5);
         glVertex3f(-0.5, 0.5, -0.5);
@@ -607,9 +689,9 @@ fn draw_digital_camera() {
 
         // Red side - BOTTOM
         glBegin(GL_POLYGON);
-       // glColor4ub(106, 81, 163, 5);
-    
-        glColor4f(153.0,153.0, 153.0, 0.2);
+        // glColor4ub(106, 81, 163, 5);
+
+        glColor4f(153.0, 153.0, 153.0, 0.2);
 
         glVertex3f(0.5, -0.5, -0.5);
         glVertex3f(0.5, -0.5, 0.5);
@@ -620,7 +702,6 @@ fn draw_digital_camera() {
         glFlush();
         glPopMatrix();
         //glLoadIdentity();
-
     } //unsafe
 } //draw_digital_cammer
   /**************************************************** */
@@ -635,7 +716,7 @@ fn draw_collimator() {
         //Trick
         glTranslatef(0.0, start as f32, 0.0);
         glRotatef(-90.0, 1.0, 0.0, 0.0);
-        
+
         glScalef(0.016, 0.016, 0.016);
 
         let quadric = gluNewQuadric();
@@ -650,149 +731,225 @@ fn draw_collimator() {
 
 /**************************************************** */
 fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
- 
     /**********vec_rao_lao / cr_caudal********************* */
-   //lao - caudal - 
+    // (lao -) (caudal -)
 
-    let lm_ostium_angles = vec![5.0, 10.0,  35.0, 45.0];
+    let lm_ostium_angles = vec![5.0, 10.0, 35.0, 45.0];
     let lm_ostium_point = get_midpoint_92("LMp");
 
     let lm_bifurcation_angles = vec![-40.0, -50.0, -25.0, -40.0];
-    let lm_bifurcation_point  = get_midpoint_92("LMd");
-    
+    let lm_bifurcation_point = get_midpoint_92("LMd");
+
     let lad_proximal_angles = vec![30.0, 45.0, -30.0, -40.0];
-    let lad_proximal_point  = get_midpoint_92("L1p");
-  
+    let lad_proximal_point = get_midpoint_92("L1p");
+
     //let lad_mid_angles = vec![5.0,  10.0 , 35.0, 45.0];
-    let lad_mid_point  = get_midpoint_92("L3p");
-  
+    let lad_mid_point = get_midpoint_92("L2d");
+
     let lad_d1_angles = vec![-35.0, -45.0, 25.0, 35.0];
-    let lad_d1_point  = get_midpoint_92("D1o");
-     
-     let lad_distal_angles = vec![30.0, 35.0 , 30.0, 40.0];
-     let lad_distal_point  = get_midpoint_92("L4p");
+    let lad_d1_point = get_midpoint_92("D1o");
+
+    let lad_distal_angles = vec![30.0, 35.0, -30.0, -40.0];
+    let lad_distal_point = get_midpoint_92("L4m");
 
     let lcx_proximal_point = get_midpoint_92("C1p");
-   
+
     // LCx Distal   | ---   | RAO 5 - 10     | CRA 35 - 45     |
-   // let lcx_distal_angles = vec![5.0, 10.0 , 35.0, 45.0];
-    let lcx_distal_point  = get_midpoint_92("C3d");
+    // let lcx_distal_angles = vec![5.0, 10.0 , 35.0, 45.0];
+    let lcx_distal_point = get_midpoint_92("C3d");
 
     let lcx_om_angles = vec![-15.0, -35.0, -25.0, -41.0];
-    let lcx_om_point  = get_midpoint_92("OMp");
-    
-    // RCA Ostium    |LAO 64, CAU 51       | LAO 49 - 79        | CAU 42 - 61 |     
+    let lcx_om_point = get_midpoint_92("OMp");
+
+    // RCA Ostium    |LAO 64, CAU 51       | LAO 49 - 79        | CAU 42 - 61 |
     //let rca_ostium = vec![30.0, 35.0 , 30.0, 40.0];
-    let rca_ostium_point  = get_midpoint_92("R1p");
+    let rca_ostium_point = get_midpoint_92("R1p");
+
+    //RCA Proximal     | LAO 79, CRA 41 | LAO 74 - 84 | CRA 37 - 45     |
+    let rca_proximal_angles = vec![-74.0, -84.0, -37.0, -45.0];
+    let rca_proximal_point = get_midpoint_92("R1m");
+
+    //RCA Mid     | --- | Lateral | CAU 10 - 30     |
+    let rca_mid_angles = vec![-70.0, -90.0, -10.0, -30.0];
+    let rca_mid_point = get_midpoint_92("R2m");
+
+    //RCA CRUX     | ---               | RAO 5 - 10          | CRA 35 - 45 |
+    let rca_crux_angles = vec![5.0, 10.0, 35.0, 45.0];
+    let rca_crux_point = get_midpoint_92("R4d");
+
     
-    //RCA Proximal     | LAO 79, CRA 41 | LAO 74 - 84 | CRA 37 - 45     | 
-    let rca_proximal_angles = vec![-74.0, -84.0 , -37.0, -45.0];
-    let rca_proximal_point  = get_midpoint_92("R1m");
-
-    //RCA Mid     | --- | Lateral | CAU 10 - 30     | 
-    let rca_mid_angles = vec![-70.0, -90.0 , -10.0, -30.0];
-    let rca_mid_point  = get_midpoint_92("R2m");
-
-     //RCA CRUX     | ---               | RAO 5 - 10          | CRA 35 - 45 |  
-     let rca_crux_angles = vec![5.0, 10.0 , 35.0, 45.0];
-     let rca_crux_point  = get_midpoint_92("R4d");
-
-    match rotate_rao_lao {
-       
-       _ if rotate_rao_lao  > &lm_ostium_angles[0] && rotate_rao_lao < &lm_ostium_angles[1]
-            && rotate_cr_ca >  &lm_ostium_angles[2 ]  && rotate_cr_ca <  &lm_ostium_angles[3 ]
-              => { draw_marker(lm_ostium_point, rotate_rao_lao, rotate_cr_ca);
-                draw_marker(lad_mid_point, rotate_rao_lao, rotate_cr_ca);
-                draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca );
-                draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca )
-
-
-            },
    
-    _ if rotate_rao_lao <  &lm_bifurcation_angles[0] && rotate_rao_lao > &lm_bifurcation_angles[1] 
-         && rotate_cr_ca < &lm_bifurcation_angles[2] && rotate_cr_ca >  &lm_bifurcation_angles[3]
-              =>  draw_marker(lm_bifurcation_point, rotate_rao_lao, rotate_cr_ca ),
-    
-     _ if rotate_rao_lao >  &lad_proximal_angles[0] && rotate_rao_lao < &lad_proximal_angles[1] 
-              && rotate_cr_ca <  &lad_proximal_angles[2] && rotate_cr_ca >  &lad_proximal_angles[3]
-                     => {
-                     draw_marker(lad_proximal_point, rotate_rao_lao, rotate_cr_ca);
-                     draw_marker(lcx_proximal_point, rotate_rao_lao, rotate_cr_ca) 
-                    },
-   
-           _ if rotate_rao_lao <  &lad_d1_angles[0] && rotate_rao_lao >  &lad_d1_angles[1] 
-                     && rotate_cr_ca >  &lad_d1_angles[2] && rotate_cr_ca <  &lad_d1_angles[3]
-                            =>  draw_marker(lad_d1_point, rotate_rao_lao, rotate_cr_ca),
-    
-      _ if rotate_rao_lao >  &lad_distal_angles[0] && rotate_rao_lao <  &lad_distal_angles[1] 
-                            && rotate_cr_ca >  &lad_distal_angles[2] && rotate_cr_ca <  &lad_distal_angles[3]
-                                   
-                            => { 
-                             draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
-                            draw_marker(rca_ostium_point, rotate_rao_lao, rotate_cr_ca);
-                            },
-     /*
-       _ if rotate_rao_lao >  &lcx_distal_angles[0] && rotate_rao_lao <  &lcx_distal_angles[1] 
-                                   && rotate_cr_ca >  &lcx_distal_angles[2] && rotate_cr_ca <  &lcx_distal_angles[3]
-                                          =>  draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca),
-          
-       */   
-        _ if rotate_rao_lao <  &lcx_om_angles[0] && rotate_rao_lao > &lcx_om_angles[1] 
-                            && rotate_cr_ca < &lcx_om_angles[2] && rotate_cr_ca >  &lcx_om_angles[3]
-                                 =>  draw_marker(lcx_om_point, rotate_rao_lao, rotate_cr_ca ),
 
-        _ if rotate_rao_lao <  &rca_proximal_angles[0] && rotate_rao_lao > &rca_proximal_angles[1] 
-                                 && rotate_cr_ca < &rca_proximal_angles[2] && rotate_cr_ca >  &rca_proximal_angles[3]
-                                      =>  draw_marker(rca_proximal_point, rotate_rao_lao, rotate_cr_ca ),                            
-   _ if rotate_rao_lao <  &rca_mid_angles[0] && rotate_rao_lao > &rca_mid_angles[1] 
-                    && rotate_cr_ca < &rca_mid_angles[2] && rotate_cr_ca >  &rca_mid_angles[3]
-                                           =>  draw_marker(rca_mid_point, rotate_rao_lao, rotate_cr_ca ),  
+  /*
+     let marker_pos = match rotate_rao_lao {
+      _ if  rotate_rao_lao >= &lm_ostium_angles[0]
+        && rotate_rao_lao <= &lm_ostium_angles[1]
+        && rotate_cr_ca >= &lm_ostium_angles[2]
+        && rotate_cr_ca <= &lm_ostium_angles[3] =>
+    {
+        draw_marker(lm_ostium_point, rotate_rao_lao, rotate_cr_ca);
+        draw_marker(lad_mid_point, rotate_rao_lao, rotate_cr_ca);
+        draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca);
+        draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca);
+    }//
 
-       _ if rotate_rao_lao >  &rca_crux_angles[0] && rotate_rao_lao < &rca_crux_angles[1] 
-                    && rotate_cr_ca > &rca_crux_angles[2] && rotate_cr_ca <  &rca_crux_angles[3]
-                                           =>  draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca ),   
-      _ => println!("something else")
+    _ => println!("something else")
+
+     };
+    */
+
+         match rotate_rao_lao {
+        _ if rotate_rao_lao > &lm_ostium_angles[0]
+            && rotate_rao_lao < &lm_ostium_angles[1]
+            && rotate_cr_ca > &lm_ostium_angles[2]
+            && rotate_cr_ca < &lm_ostium_angles[3] =>
+        {
+            draw_marker(lm_ostium_point, rotate_rao_lao, rotate_cr_ca);
+            draw_marker(lad_mid_point, rotate_rao_lao, rotate_cr_ca);
+            draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca);
+            draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca)
+        }
+
+        _ if rotate_rao_lao < &lm_bifurcation_angles[0]
+            && rotate_rao_lao > &lm_bifurcation_angles[1]
+            && rotate_cr_ca < &lm_bifurcation_angles[2]
+            && rotate_cr_ca > &lm_bifurcation_angles[3] =>
+        {
+            draw_marker(lm_bifurcation_point, rotate_rao_lao, rotate_cr_ca)
+        }
+
+        _ if rotate_rao_lao > &lad_proximal_angles[0]
+            && rotate_rao_lao < &lad_proximal_angles[1]
+            && rotate_cr_ca < &lad_proximal_angles[2]
+            && rotate_cr_ca > &lad_proximal_angles[3] =>
+        {
+            draw_marker(lad_proximal_point, rotate_rao_lao, rotate_cr_ca);
+            draw_marker(lcx_proximal_point, rotate_rao_lao, rotate_cr_ca);
+            draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
+        }
+
+        _ if rotate_rao_lao < &lad_d1_angles[0]
+            && rotate_rao_lao > &lad_d1_angles[1]
+            && rotate_cr_ca > &lad_d1_angles[2]
+            && rotate_cr_ca < &lad_d1_angles[3] =>
+        {
+            draw_marker(lad_d1_point, rotate_rao_lao, rotate_cr_ca)
+        }
+
+        _ if rotate_rao_lao > &lad_distal_angles[0]
+            && rotate_rao_lao < &lad_distal_angles[1]
+            && rotate_cr_ca < &lad_distal_angles[2]
+            && rotate_cr_ca > &lad_distal_angles[3] =>
+        {
+            draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
+            //draw_marker(rca_ostium_point, rotate_rao_lao, rotate_cr_ca);
+        }
+
+        
+        _ if rotate_rao_lao > &lad_distal_angles[0]
+        && rotate_rao_lao < &lad_distal_angles[1]
+        && rotate_cr_ca > &lad_distal_angles[2]
+        && rotate_cr_ca < &lad_distal_angles[3] =>
+    {
+        draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
+        draw_marker(rca_ostium_point, rotate_rao_lao, rotate_cr_ca);
+
+
+
     }
-    
-    
-
-}//set_market
-
-fn draw_marker(center: Vec<f32>, rotate_rao_lao: &f32, rotate_cr_ca: &f32){
-  let mut j = 0;
-   unsafe{
- 
-    let polyline = circle(&0.8, 64);
-
-   glPushMatrix();
-   glTranslatef(-0.2, 0.2, 0.0);
-   glRotatef(*rotate_cr_ca, 1.0, 0.0, 0.0); //x
-   glRotatef(*rotate_rao_lao, 0.0, 1.0, 0.0); //y axis
-   glScalef(0.1, 0.1, 0.1); 
-   /***********************************/
-   glPushMatrix();
-   glColor3f(1.0, 1.0, 1.0); //white
-   glTranslatef(center[0], center[1], center[2]);
-   glPointSize(1.0 * SIZE_UNIT * 0.6);
-   glBegin(GL_POINTS);
-   while j < polyline.coords().len()  {
-          glVertex3f(
-           polyline.coords()[j][0],
-           polyline.coords()[j][1],
-           0.0
-           );
-       j = j + 1;
-    
-   }
-   glEnd();
-   glPopMatrix();
-
-   /**************************************/
-   glFlush();
-   glPopMatrix();
-
-
   
- }//usafe
+   /* 
+        _ if rotate_rao_lao >  &lcx_distal_angles[0] && rotate_rao_lao <  &lcx_distal_angles[1]
+                                    && rotate_cr_ca >  &lcx_distal_angles[2] && rotate_cr_ca <  &lcx_distal_angles[3]
+                                           =>  draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca),
+*/
+         _ if rotate_rao_lao < &lcx_om_angles[0]
+            && rotate_rao_lao > &lcx_om_angles[1]
+            && rotate_cr_ca < &lcx_om_angles[2]
+            && rotate_cr_ca > &lcx_om_angles[3] =>
+        {
+            draw_marker(lcx_om_point, rotate_rao_lao, rotate_cr_ca)
+        }
 
-}//draw_marker
+        _ if rotate_rao_lao < &rca_proximal_angles[0]
+            && rotate_rao_lao > &rca_proximal_angles[1]
+            && rotate_cr_ca < &rca_proximal_angles[2]
+            && rotate_cr_ca > &rca_proximal_angles[3] =>
+        {
+            draw_marker(rca_proximal_point, rotate_rao_lao, rotate_cr_ca)
+        }
+        _ if rotate_rao_lao < &rca_mid_angles[0]
+            && rotate_rao_lao > &rca_mid_angles[1]
+            && rotate_cr_ca < &rca_mid_angles[2]
+            && rotate_cr_ca > &rca_mid_angles[3] =>
+        {
+            draw_marker(rca_mid_point, rotate_rao_lao, rotate_cr_ca)
+        }
+
+        _ if rotate_rao_lao > &rca_crux_angles[0]
+            && rotate_rao_lao < &rca_crux_angles[1]
+            && rotate_cr_ca > &rca_crux_angles[2]
+            && rotate_cr_ca < &rca_crux_angles[3] =>
+        {
+            draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca)
+        }
+        _ => println!("something else"),
+    }
+
+
+} //set_market
+
+
+
+fn draw_marker(center: Vec<f32>, rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
+    let mut j = 0;
+    unsafe {
+        let polyline = circle(&0.8, 64);
+
+        glPushMatrix();
+        glTranslatef(-0.2, 0.2, 0.0);
+        glRotatef(*rotate_cr_ca, 1.0, 0.0, 0.0); //x
+        glRotatef(*rotate_rao_lao, 0.0, 1.0, 0.0); //y axis
+        glScalef(0.1, 0.1, 0.1);
+        /***********************************/
+        glPushMatrix();
+        glColor3f(1.0, 1.0, 1.0); //white
+        glTranslatef(center[0], center[1], center[2]);
+        glPointSize(1.0 * SIZE_UNIT * 0.6);
+        glBegin(GL_POINTS);
+        while j < polyline.coords().len() {
+            glVertex3f(polyline.coords()[j][0], polyline.coords()[j][1], 0.0);
+            j = j + 1;
+        }
+        glEnd();
+        glPopMatrix();
+
+        /**************************************/
+        glFlush();
+        glPopMatrix();
+    } //usafe
+} //draw_marker
+
+fn draw_header(txt: &str, x: i32, y: i32, w: i32, h: i32) {
+    draw::push_clip(x, y, w, h);
+    draw::draw_box(FrameType::ThinUpBox, x, y, w, h, Color::FrameDefault);
+    draw::set_draw_color(Color::Black);
+    draw::draw_text2(txt, x, y, w, h, Align::Center);
+    draw::pop_clip();
+}
+
+
+
+fn draw_data(txt: &str, x: i32, y: i32, w: i32, h: i32, selected: bool) {
+    draw::push_clip(x, y, w, h);
+    if selected {
+        draw::set_draw_color(Color::from_u32(0xD3D3D3));
+    } else {
+        draw::set_draw_color(Color::White);
+    }
+    draw::draw_rectf(x, y, w, h);
+    draw::set_draw_color(Color::Gray0);
+    draw::draw_text2(txt, x, y, w, h, Align::Center);
+    draw::draw_rect(x, y, w, h);
+    draw::pop_clip();
+}
