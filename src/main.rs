@@ -223,13 +223,13 @@ pub fn main() {
         FRAME_INFO_Y + 20, 
         FRAME_INFO_WIDTH - 10, 
         FRAME_INFO_HEIGHT -10 , "OPTIMAL VIEWS");
-    table.set_rows(3);
+    table.set_rows(14);
     table.set_row_header(true);
     table.set_row_resize(true);
     table.set_cols(3);
     table.set_col_header(true);
-    table.set_col_width_all(230);
-    table.set_row_height_all(40);
+    table.set_col_width_all(240);
+    table.set_row_height_all(25);
     
     table.set_col_resize(true);
    // table.selection_color(FL_YELLOW);

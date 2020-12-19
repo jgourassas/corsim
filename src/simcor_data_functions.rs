@@ -831,7 +831,7 @@ pub fn get_diameter(point_name: &str) -> f32 {
 
  //pub fn get_optimal_views(site_name: &str) -> Vec<&str> {
  //   pub fn get_optimal_views() -> Vec<&'static str> {
-  pub fn get_optimal_views() ->  [&'static str; 9] {    
+  pub fn get_optimal_views() ->  [&'static str; 42] {    
   let  data =  [
     "LM Ostium",
     "Rao(5-10) Cra(35-45) ",
@@ -842,10 +842,42 @@ pub fn get_diameter(point_name: &str) -> f32 {
     "LM Bifurc", 
     "Lao(40-50) Cau(25-40)",
     "Rao(8-Lao 8) Cau(43-45)",
-  
+     "LAD prox", 
+     "Rao(30-45), Cau(30-4)",
+     "None",
+     "LAD Mid",
+     "Rao(5-10), Cra(35-45)",
+    "None", 
+    "LAD Dist",
+    "Rao(30-45), Cau(30-40)",
+     "Lateral, Cra(10-30)", 
+    "LAD d1",
+    "Lao(30-45), Cra(25-35)",
+    "Rao(3 to Lao 27), Cra(66-77)",
+    "Lcx Prox",
+    "Rao(5-15), Cau(30)",
+    "Rao(30-45), Cau(30-40)",
+    "Lcx Dist",
+    "Rao(5-10), Cra(35-45) ",
+    "None",
+    "Lcx-Om1",
+    "Rao(5-15), Cau(30)",
+    "Rao(15-33), Cau(25-41)",
+      "RCA Prox",
+      "Lao(30-45), Cra(25-35)  ",
+      "Lao(74-84), Cra(37-45) ",
+      "RCA Mid",
+      "Rao(35-45) ",
+      "Lateral, Cau(10-30)",
+      "RCA Dist - Crux",
+      "Rao(5-10), Cra(35-45) ",
+      "Lao(35-52), Cra(27-41) ",
+      "PDA",
+      "Rao(5-10), Cra(35-45) ",
+      "Lao(35-52), Cra(27-41) ",
   ];
 
-  data
+  data 
 
     /*
     let mut rows = HashMap::new();
