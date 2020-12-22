@@ -43,11 +43,7 @@ pub fn get_midpoint_92(point_name: &str) -> Vec<f32> {
     let mut points = HashMap::new();
     points.insert(
         String::from("LMp"),
-        vec![
-            0.29554435894139947,
-            0.03656080302154424,
-            0.036288284339950155,
-        ],
+        vec![0.29554435894139947, 0.03656080302154424, 0.036288284339950155],
     );
     points.insert(
         String::from("LMm"),
@@ -111,11 +107,7 @@ pub fn get_midpoint_92(point_name: &str) -> Vec<f32> {
     );
     points.insert(
         String::from("C1m"),
-        vec![
-            1.6403761922803517,
-            -0.7321259575364403,
-            -0.11470627751419989,
-        ],
+        vec![1.6403761922803517, -0.7321259575364403, -0.11470627751419989],
     );
     points.insert(
         String::from("C1d"),
@@ -666,12 +658,16 @@ pub fn get_midpoint_color_92(point_name: &str) -> Vec<u8> {
     colors.insert(String::from("CIo"), vec![215, 25, 28]);
     colors.insert(String::from("CIp"), vec![215, 25, 28]);
     colors.insert(String::from("CIm"), vec![215, 25, 28]);
-
+/*
     colors.insert(String::from("RDo"), vec![252, 141, 89]);
     colors.insert(String::from("RDp"), vec![252, 141, 89]);
     colors.insert(String::from("RDm"), vec![252, 141, 89]);
+*/
+colors.insert(String::from("RDo"), vec![127,191,123]);
+colors.insert(String::from("RDp"), vec![127,191,123]);
+colors.insert(String::from("RDm"), vec![127,191,123]);
 
-    colors.insert(String::from("RIo"), vec![215, 25, 28]);
+   colors.insert(String::from("RIo"), vec![215, 25, 28]);
     colors.insert(String::from("RIp"), vec![252, 141, 89]);
     colors.insert(String::from("RIm"), vec![215, 25, 28]);
 
@@ -810,8 +806,8 @@ pub fn get_diameter(point_name: &str) -> f32 {
     diameters.insert(String::from("RIp"), 1.9);
     diameters.insert(String::from("RIm"), 1.5);
     diameters.insert(String::from("RPo"), 2.6);
-    diameters.insert(String::from("RIp"), 2.4);
-    diameters.insert(String::from("RIm"), 2.3);
+    diameters.insert(String::from("RPp"), 2.4);
+    diameters.insert(String::from("RPm"), 2.3);
 
     let point = point_name.trim().to_string();
     let diameter = diameters.get(&point);
@@ -824,66 +820,57 @@ pub fn get_diameter(point_name: &str) -> f32 {
 
     // *diameter.unwrap()
 } //get_diameter
-  //this is the data for optimal view table
-  // Should be array of vectors
-  //let v: [Vec<u8>; 10] = [vec![], vec![], vec![], vec![], vec![], vec![], vec![], vec![], vec![], vec![]],
-  // std::iter::repeat(vec![]).take(10).collect::<Vec<_>>().
 
- //pub fn get_optimal_views(site_name: &str) -> Vec<&str> {
- //   pub fn get_optimal_views() -> Vec<&'static str> {
-  pub fn get_optimal_views() ->  [&'static str; 42] {    
-  let  data =  [
-    "LM Ostium",
-    "Rao(5-10) Cra(35-45) ",
-    "Lao(30-40) Cra(19-25)",
-    "LM Proximal", 
-    "Rao(5-Lao 7) Cra(32-42)", 
-    "None",
-    "LM Bifurc", 
-    "Lao(40-50) Cau(25-40)",
-    "Rao(8-Lao 8) Cau(43-45)",
-     "LAD prox", 
-     "Rao(30-45), Cau(30-4)",
-     "None",
-     "LAD Mid",
-     "Rao(5-10), Cra(35-45)",
-    "None", 
-    "LAD Dist",
-    "Rao(30-45), Cau(30-40)",
-     "Lateral, Cra(10-30)", 
-    "LAD d1",
-    "Lao(30-45), Cra(25-35)",
-    "Rao(3 to Lao 27), Cra(66-77)",
-    "Lcx Prox",
-    "Rao(5-15), Cau(30)",
-    "Rao(30-45), Cau(30-40)",
-    "Lcx Dist",
-    "Rao(5-10), Cra(35-45) ",
-    "None",
-    "Lcx-Om1",
-    "Rao(5-15), Cau(30)",
-    "Rao(15-33), Cau(25-41)",
-      "RCA Prox",
-      "Lao(30-45), Cra(25-35)  ",
-      "Lao(74-84), Cra(37-45) ",
-      "RCA Mid",
-      "Rao(35-45) ",
-      "Lateral, Cau(10-30)",
-      "RCA Dist - Crux",
-      "Rao(5-10), Cra(35-45) ",
-      "Lao(35-52), Cra(27-41) ",
-      "PDA",
-      "Rao(5-10), Cra(35-45) ",
-      "Lao(35-52), Cra(27-41) ",
-  ];
+//this is the data for optimal view table
 
-  data 
+pub fn get_optimal_views() -> [&'static str; 42] {
+    let data = [
+        "LM Ostium",
+        "Rao(5-10) Cra(35-45) ",
+        "Lao(30-40) Cra(19-25)",
+        "LM Proximal",
+        "Rao(5-Lao 7) Cra(32-42)",
+        "None",
+        "LM Bifurc",
+        "Lao(40-50) Cau(25-40)",
+        "Rao(8-Lao 8) Cau(43-45)",
+        "LAD prox",
+        "Rao(30-45), Cau(30-40)",
+        "None",
+        "LAD Mid",
+        "Rao(5-10), Cra(35-45)",
+        "None",
+        "LAD Dist",
+        "Rao(30-45), Cau(30-40)",
+        "Lateral, Cra(10-30)",
+        "LAD d1",
+        "Lao(30-45), Cra(25-35)",
+        "Rao(3 to Lao 27), Cra(66-77)",
+        "Lcx Prox",
+        "Rao(5-15), Cau(30)",
+        "Rao(30-45), Cau(30-40)",
+        "Lcx Dist",
+        "Rao(5-10), Cra(35-45) ",
+        "None",
+        "Lcx-Om1",
+        "Rao(5-15), Cau(30)",
+        "Rao(15-33), Cau(25-41)",
+        "RCA Prox",
+        "Lao(30-45), Cra(25-35)  ",
+        "Lao(74-84), Cra(37-45) ",
+        "RCA Mid",
+        "Rao(35-45) ",
+        "Lateral, Cau(10-30)",
+        "RCA Dist - Crux",
+        "Rao(5-10), Cra(35-45) ",
+        "Lao(35-52), Cra(27-41) ",
+        "PDA",
+        "Rao(5-10), Cra(35-45) ",
+        "Lao(35-52), Cra(27-41) ",
+    ];
 
-  
-
+    data
 } //get_optimal_views
-
-
 
 /*
 fn get_data_92() {

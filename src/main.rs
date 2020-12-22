@@ -9,6 +9,12 @@ extern crate csv;
 
 extern crate nalgebra as na;
 use na::Point3;
+//use na::RealField;
+//use std::cmp::Ordering;
+extern crate iset;
+use iset::IntervalMap;
+use iset::IntervalSet;
+
 extern crate ncollide3d; // If you need 3D.
 use ncollide2d::procedural::circle;
 use ncollide3d::shape::Polyline;
@@ -41,8 +47,8 @@ const OUTER_RADIOUS: f64 = 0.85;
 mod simcor_data_functions;
 
 use simcor_data_functions::{
-    get_diameter, get_midpoint_92, get_midpoint_color_92, get_segment_points_92,
-    get_segments_names_92, get_optimal_views, 
+    get_diameter, get_midpoint_92, get_midpoint_color_92, get_optimal_views, get_segment_points_92,
+    get_segments_names_92,
 };
 
 //const SIZE_UNIT: f32 = 2.0;
@@ -118,7 +124,7 @@ pub fn main() {
     widget_rao_lao.set_color(Color::from_rgb(158, 188, 218)); //
     widget_rao_lao.set_frame(FrameType::RoundUpBox);
     widget_rao_lao.set_bounds(-90.0, 90.0);
-    //widget_rao_lao.set_bounds(90.0, -90.0);
+   // widget_rao_lao.set_bounds(-180.0, 180.0);
     widget_rao_lao.set_step(1.0, 1);
     widget_rao_lao.set_label_size(18);
     widget_rao_lao.set_trigger(CallbackTrigger::Changed);
@@ -168,6 +174,7 @@ pub fn main() {
     widget_cr_ca.set_frame(FrameType::RoundUpBox);
 
     widget_cr_ca.set_bounds(90.0, -90.0);
+    //widget_cr_ca.set_bounds(180.0, -180.0);
     widget_cr_ca.set_step(1.0, 1);
     widget_cr_ca.set_label_size(18);
 
@@ -205,7 +212,7 @@ pub fn main() {
     );
 
     //Frame -> FLTK BOX = X,Y W, H
-  //  const FLTK_WINDOW_HEIGHT: i32 = 1200 - MARGIN_TOP - MARGIN_BOTTOM;
+    //  const FLTK_WINDOW_HEIGHT: i32 = 1200 - MARGIN_TOP - MARGIN_BOTTOM;
     let mut frame_info_view = Frame::new(
         FRAME_INFO_X,
         FRAME_INFO_Y,
@@ -219,10 +226,13 @@ pub fn main() {
     frame_info_view.set_label_size(20);
     frame_info_view.set_label("Optimal Views");
 
-    let mut table = table::Table::new( FRAME_INFO_X, 
-        FRAME_INFO_Y + 20, 
-        FRAME_INFO_WIDTH - 10, 
-        FRAME_INFO_HEIGHT -10 , "OPTIMAL VIEWS");
+    let mut table = table::Table::new(
+        FRAME_INFO_X,
+        FRAME_INFO_Y + 20,
+        FRAME_INFO_WIDTH - 10,
+        FRAME_INFO_HEIGHT - 10,
+        "OPTIMAL VIEWS",
+    );
     table.set_rows(14);
     table.set_row_header(true);
     table.set_row_resize(true);
@@ -230,40 +240,33 @@ pub fn main() {
     table.set_col_header(true);
     table.set_col_width_all(240);
     table.set_row_height_all(25);
-    
+
     table.set_col_resize(true);
-   // table.selection_color(FL_YELLOW);
+    // table.selection_color(FL_YELLOW);
     table.end();
     // Called when the table is drawn then when it's redrawn due to events
     let table_c = table.clone();
-  
-  
+
     // Fl_Table calls this function to draw each visible cell in the table.
-    // draw_cell(TableContext context, int ROW=0, int COL=0, int X=0, int Y=0, int W=0, int H=0) 
-    
-    //We move cells to the heap by Box... 
-    
-    //  DrawHeader(const char *s, int X, int Y, int W, int H)
+    // draw_cell(TableContext context, int ROW=0, int COL=0, int X=0, int Y=0, int W=0, int H=0)
+    //We move cells to the heap by Box...
 
     table.draw_cell(Box::new(move |ctx, row, col, x, y, w, h| match ctx {
         table::TableContext::StartPage => draw::set_font(Font::Helvetica, 16),
         table::TableContext::ColHeader => {
-            let header=  vec!["SITE", "Option A", "Option B"];
+            let header = vec!["SITE", "Option A", "Option B"];
             let idx = col as usize;
             draw_header(&format!("{}", header[idx]), x, y, w, h);
-
         } // Column titles
         table::TableContext::RowHeader => draw_header(&format!("{}", row + 1), x, y, w, h), // Row titles
         table::TableContext::Cell => {
-           
-           let max_col = 3;
+            let max_col = 3;
 
-           
             let sarray = get_optimal_views();
             let idx = (row * max_col + col) as usize;
 
             draw_data(
-                &format!("{}",  sarray[idx] ),
+                &format!("{}", sarray[idx]),
                 x,
                 y,
                 w,
@@ -271,16 +274,11 @@ pub fn main() {
                 table_c.is_selected(row, col),
             ); // Data in cells
         }
-       
+
         _ => (),
     }));
 
-
-
-   //table.draw_cell(Box::new("LM");
-
-
-
+    //table.draw_cell(Box::new("LM");
 
     but_ap_view.set_color(Color::from_rgb(102, 194, 165)); //blue light
     let mut gl_wind =
@@ -736,6 +734,8 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
 
     let lm_ostium_angles = vec![5.0, 10.0, 35.0, 45.0];
     let lm_ostium_point = get_midpoint_92("LMp");
+    //  show_rao_lao_lights(&lm_ostium_angles, rotate_rao_lao);
+   
 
     let lm_bifurcation_angles = vec![-40.0, -50.0, -25.0, -40.0];
     let lm_bifurcation_point = get_midpoint_92("LMd");
@@ -775,12 +775,13 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
 
     //RCA CRUX     | ---               | RAO 5 - 10          | CRA 35 - 45 |
     let rca_crux_angles = vec![5.0, 10.0, 35.0, 45.0];
-    let rca_crux_point = get_midpoint_92("R4d");
+    //let rca_crux_angles = vec![-35.0, -52.0, 27.0, 41.0];
+    let rca_crux_point = get_midpoint_92("R4p");
 
-    
+    show_rao_lao_lights(rotate_rao_lao);
+    show_cr_ca_lights(rotate_cr_ca);
    
-
-  /*
+    /*
      let marker_pos = match rotate_rao_lao {
       _ if  rotate_rao_lao >= &lm_ostium_angles[0]
         && rotate_rao_lao <= &lm_ostium_angles[1]
@@ -798,7 +799,7 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
      };
     */
 
-         match rotate_rao_lao {
+    match rotate_rao_lao {
         _ if rotate_rao_lao > &lm_ostium_angles[0]
             && rotate_rao_lao < &lm_ostium_angles[1]
             && rotate_cr_ca > &lm_ostium_angles[2]
@@ -807,7 +808,7 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
             draw_marker(lm_ostium_point, rotate_rao_lao, rotate_cr_ca);
             draw_marker(lad_mid_point, rotate_rao_lao, rotate_cr_ca);
             draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca);
-            draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca)
+            draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca);
         }
 
         _ if rotate_rao_lao < &lm_bifurcation_angles[0]
@@ -815,7 +816,7 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
             && rotate_cr_ca < &lm_bifurcation_angles[2]
             && rotate_cr_ca > &lm_bifurcation_angles[3] =>
         {
-            draw_marker(lm_bifurcation_point, rotate_rao_lao, rotate_cr_ca)
+            draw_marker(lm_bifurcation_point, rotate_rao_lao, rotate_cr_ca);
         }
 
         _ if rotate_rao_lao > &lad_proximal_angles[0]
@@ -833,42 +834,38 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
             && rotate_cr_ca > &lad_d1_angles[2]
             && rotate_cr_ca < &lad_d1_angles[3] =>
         {
-            draw_marker(lad_d1_point, rotate_rao_lao, rotate_cr_ca)
+            draw_marker(lad_d1_point, rotate_rao_lao, rotate_cr_ca);
         }
-
+        /*
+                _ if rotate_rao_lao > &lad_distal_angles[0]
+                    && rotate_rao_lao < &lad_distal_angles[1]
+                    && rotate_cr_ca < &lad_distal_angles[2]
+                    && rotate_cr_ca > &lad_distal_angles[3] =>
+                {
+                    draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
+                    //draw_marker(rca_ostium_point, rotate_rao_lao, rotate_cr_ca);
+                }
+        */
         _ if rotate_rao_lao > &lad_distal_angles[0]
             && rotate_rao_lao < &lad_distal_angles[1]
-            && rotate_cr_ca < &lad_distal_angles[2]
-            && rotate_cr_ca > &lad_distal_angles[3] =>
+            && rotate_cr_ca > &lad_distal_angles[2]
+            && rotate_cr_ca < &lad_distal_angles[3] =>
         {
             draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
-            //draw_marker(rca_ostium_point, rotate_rao_lao, rotate_cr_ca);
+            draw_marker(rca_ostium_point, rotate_rao_lao, rotate_cr_ca);
         }
 
-        
-        _ if rotate_rao_lao > &lad_distal_angles[0]
-        && rotate_rao_lao < &lad_distal_angles[1]
-        && rotate_cr_ca > &lad_distal_angles[2]
-        && rotate_cr_ca < &lad_distal_angles[3] =>
-    {
-        draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
-        draw_marker(rca_ostium_point, rotate_rao_lao, rotate_cr_ca);
-
-
-
-    }
-  
-   /* 
-        _ if rotate_rao_lao >  &lcx_distal_angles[0] && rotate_rao_lao <  &lcx_distal_angles[1]
-                                    && rotate_cr_ca >  &lcx_distal_angles[2] && rotate_cr_ca <  &lcx_distal_angles[3]
-                                           =>  draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca),
-*/
-         _ if rotate_rao_lao < &lcx_om_angles[0]
+        /*
+                _ if rotate_rao_lao >  &lcx_distal_angles[0] && rotate_rao_lao <  &lcx_distal_angles[1]
+                                            && rotate_cr_ca >  &lcx_distal_angles[2] && rotate_cr_ca <  &lcx_distal_angles[3]
+                                                   =>  draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca),
+        */
+        _ if rotate_rao_lao < &lcx_om_angles[0]
             && rotate_rao_lao > &lcx_om_angles[1]
             && rotate_cr_ca < &lcx_om_angles[2]
             && rotate_cr_ca > &lcx_om_angles[3] =>
         {
-            draw_marker(lcx_om_point, rotate_rao_lao, rotate_cr_ca)
+            draw_marker(lcx_om_point, rotate_rao_lao, rotate_cr_ca);
         }
 
         _ if rotate_rao_lao < &rca_proximal_angles[0]
@@ -895,11 +892,117 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
         }
         _ => println!("something else"),
     }
-
-
 } //set_market
 
+/************************************************* */
+fn check_rao_lao_intervals(rao_lao: &f32) -> bool {
+    let mut map = iset::IntervalMap::new();
+    map.insert(5.0..10.0, "LMp");
+    map.insert(-50.0..-40.0, "LMd");
+    map.insert(30.0..45.0, "L1p");
+    map.insert(5.0..10.0, "L2d");
+    map.insert(-45.0..-35.0, "D1o");
+    map.insert(30.0..35.0, "L4m");
+    map.insert(5.0..10.0, "C3d");
+    map.insert(-35.0..-15.0, "OMp");
+    map.insert(30.0..35.0, "R1p");
+    map.insert(-84.0..-74.0, "R1m");
+    map.insert(-90.0..-70.0, "R2m");
+    map.insert(5.0..10.0, "R4d");
+   
+   
+    /************************************/
 
+    // let a: Vec<_> = map.iter(..).collect();
+    let start: Vec<_> = map.intervals(rao_lao..).collect();
+   //let end: Vec<_> = map.intervals(..rao_lao).collect();
+   //println!("start {:?}", start );
+   // println!("end {:?}", end );
+    let response: bool;
+    if start.is_empty() == false && start[0].contains(rao_lao)   {
+        response = true;
+        return response
+    } else {
+        response = false;
+        return response
+    }
+
+}
+/*************************************** */
+fn show_rao_lao_lights(rao_lao: &f32) {
+    let contains = check_rao_lao_intervals(rao_lao);
+    //println!("contains: {:?} ", contains);
+
+    if contains == true {
+        unsafe {
+            glPushMatrix();
+            glEnable(GL_POINT_SMOOTH);
+            //glColor3ub(255,255,191); //light yellow
+            glColor3ub(158, 188, 218); //
+            glPointSize(10.0 * SIZE_UNIT * 1.0);
+            glBegin(GL_POINTS);
+            glVertex3f(0.9, -0.9, 0.0);
+            glEnd();
+            glPopMatrix();
+        } //unsafe
+    } //if
+} //show_lights
+  /*************************************************/
+fn check_cr_ca_intervals(cr_ca: &f32) -> bool {
+    let mut map = iset::IntervalMap::new();
+    map.insert(35.0..45.0, "LMp");
+    map.insert(-40.0..-25.0, "LMd");
+    map.insert(-40.0..-30.0, "L1p");
+    map.insert(35.0..45.0, "L2d");
+    map.insert(25.0..35.0, "D1o");
+    map.insert(-40.0..-30.0, "L4m");
+    map.insert(35.0..45.0, "C3d");
+    map.insert(-41.0..-25.0, "OMp");
+    map.insert(-45.0..-37.0, "R1m");
+    map.insert(-30.0..-10.0, "R2m");
+    map.insert(35.0..45.0, "R4d");
+
+
+
+    /************************************/
+    // let a: Vec<_> = map.iter(..).collect();
+
+    let start: Vec<_> = map.intervals(cr_ca..).collect();
+    let end: Vec<_> = map.intervals(..cr_ca).collect();
+
+   // println!("cr_ca: {:?} ", cr_ca );
+   // println!("2 start 0 {:?}", start );
+    //println!("2 end {:?}", end );
+
+    let response: bool;
+
+    if start.is_empty() == false && start[0].contains(cr_ca)   {
+        response = true;
+        return response
+    } else {
+        response = false;
+        return response
+    }//if
+}//check_cr_ca_interval
+
+/************************************* */
+fn show_cr_ca_lights(cr_ca: &f32) {
+    let contains = check_cr_ca_intervals(cr_ca);
+    if contains == true {
+        unsafe {
+            glPushMatrix();
+            glEnable(GL_POINT_SMOOTH);
+            //glColor3ub(255,255,191); //light yellow
+            glColor3ub(136, 86, 167); //
+            glPointSize(10.0 * SIZE_UNIT * 1.0);
+            glBegin(GL_POINTS);
+            glVertex3f(0.8, -0.9, 0.0);
+            glEnd();
+            glPopMatrix();
+        } //unsafe
+    } //if
+} //show_lights
+  /*************************************************/
 
 fn draw_marker(center: Vec<f32>, rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
     let mut j = 0;
@@ -937,8 +1040,6 @@ fn draw_header(txt: &str, x: i32, y: i32, w: i32, h: i32) {
     draw::draw_text2(txt, x, y, w, h, Align::Center);
     draw::pop_clip();
 }
-
-
 
 fn draw_data(txt: &str, x: i32, y: i32, w: i32, h: i32, selected: bool) {
     draw::push_clip(x, y, w, h);
