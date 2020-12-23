@@ -483,7 +483,14 @@ pub fn get_segment_points_92(segment_name: &str) -> Vec<&str> {
     segments.insert(String::from("C2"), vec!["C1d", "C2p", "C2m", "C2d"]);
     segments.insert(String::from("C3"), vec!["C2d", "C3p", "C3m", "C3d"]);
     segments.insert(String::from("C4"), vec!["C3d", "C4p", "C4m", "C4d"]);
-
+   /*
+    segments.insert(String::from("R1"), vec!["R1p", "R1m", "R1d",
+    "R1d", "R2p", "R2m", "R2d", 
+    "R2d", "R3p", "R3m", "R3d",
+    "R3d", "R4p", "R4m", "R4d",
+    "R3d", "RDo", "RDp", "RDm"
+    ]);
+    */
     segments.insert(String::from("R1"), vec!["R1p", "R1m", "R1d"]);
     segments.insert(String::from("R2"), vec!["R1d", "R2p", "R2m", "R2d"]);
     segments.insert(String::from("R3"), vec!["R2d", "R3p", "R3m", "R3d"]);
@@ -521,7 +528,7 @@ pub fn get_segment_points_92(segment_name: &str) -> Vec<&str> {
                               present in right, small-right, and balanced-dominant anatomy
 
     */
-    segments.insert(String::from("RD"), vec!["R3d", "RDo", "RDp", "RDm"]);
+      segments.insert(String::from("RD"), vec!["R3d", "RDo", "RDp", "RDm"]);
     /*
     RI Inferior Inferior wall branch arises from R4, present only in right and
                   small-right-dominant anatomy
@@ -715,8 +722,8 @@ pub fn get_diameter(point_name: &str) -> f32 {
     diameters.insert(String::from("L3d"), 1.4);
 
     diameters.insert(String::from("L4p"), 1.4);
-    diameters.insert(String::from("L4m"), 1.1);
-    diameters.insert(String::from("L4d"), 0.9);
+    diameters.insert(String::from("L4m"), 1.2);
+    diameters.insert(String::from("L4d"), 1.0);
 
     diameters.insert(String::from("C1p"), 3.4);
     diameters.insert(String::from("C1m"), 3.4);
@@ -793,9 +800,9 @@ pub fn get_diameter(point_name: &str) -> f32 {
     diameters.insert(String::from("CPp"), 2.1);
     diameters.insert(String::from("CPm"), 1.7);
     diameters.insert(String::from("CPo"), 2.6);
-    diameters.insert(String::from("CIo"), 0.1);
-    diameters.insert(String::from("CIp"), 0.1);
-    diameters.insert(String::from("CIm"), 0.1);
+    diameters.insert(String::from("CIo"), 1.2);//I have changed it was 0.0
+    diameters.insert(String::from("CIp"), 1.1);//changed
+    diameters.insert(String::from("CIm"), 1.1);
     diameters.insert(String::from("CDo"), 3.2);
     diameters.insert(String::from("CDp"), 3.1);
     diameters.insert(String::from("CDm"), 2.5);
@@ -899,6 +906,8 @@ pub fn get_optimal_views() -> [&'static str; 42] {
     data
 } //get_optimal_views
 
+
+/*********************************************************** */
 /*
 fn get_data_92() {
     let mut reader = csv::ReaderBuilder::new()

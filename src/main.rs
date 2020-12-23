@@ -49,7 +49,8 @@ mod simcor_data_functions;
 use simcor_data_functions::{
     get_diameter, get_midpoint_92, get_midpoint_color_92, 
     get_optimal_views, get_segment_points_92, get_segments_names_92, 
-    optimal_angles,
+    optimal_angles, 
+
 };
 
 //const SIZE_UNIT: f32 = 2.0;
@@ -425,6 +426,7 @@ fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32)
             draw_as_polyline_segment(&points, &color_vec, &diameters_vec, point_names[i]);
             i = i + 1;
         } //while
+        //draw_aortic_ring();
         glPopMatrix();
     } //unsafe
 } //draw_segments
@@ -571,7 +573,9 @@ fn draw_arm(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
         draw_collimator();
         x_ray_beam();
         draw_digital_camera();
-
+        //draw_cylinder(SLICES: i8, STACKS: i8, SCALE_X: f32, SCALE_Y: f32, SCALE_Z: f32)
+        //glScalef(0.5, 1.0, 1.0);
+     
         /*********************************************** */
 
         glPopMatrix();
@@ -858,3 +862,32 @@ fn draw_data(txt: &str, x: i32, y: i32, w: i32, h: i32, selected: bool) {
     draw::draw_rect(x, y, w, h);
     draw::pop_clip();
 }
+
+/******************************************************** */
+//glScalef(0.5, 1.0, 1.0);
+    fn draw_aortic_ring() {
+        //void gluSphere(	GLUquadric* quad,
+        //GLdouble radius,
+        //GLint slices,
+        //GLint stacks);
+        unsafe {
+            // GLUquadricObj *qobj;
+            let qobj = gluNewQuadric();
+            glPushMatrix();
+            //glColor3f(1.0, 0.0, 0.0); // red
+            //glColor3ub(204,235,197);//light gree
+            glColor3ub(179,205,227 );//light gree
+            glTranslatef(-0.2, -0.1, 0.0);
+            glScalef(1.1, 0.5, 1.1);
+           // gluQuadricDrawStyle(qobj, GLU_FILL); /* smooth shaded */
+          //  gluQuadricDrawStyle(qobj, GLU_SILHOUETTE);
+            gluQuadricNormals(qobj, GLU_SMOOTH);
+            //gluSphere(qobj, 1.1, 100, 150);
+            
+            gluDisk(qobj, 1.0, 1.05, 150, 120);
+            glPopMatrix();
+    
+            gluDeleteQuadric(qobj);
+        } //unsafe
+    } //render_triagle
+    
