@@ -820,9 +820,36 @@ pub fn get_diameter(point_name: &str) -> f32 {
 
     // *diameter.unwrap()
 } //get_diameter
-
+/***************************************************/
 //this is the data for optimal view table
+pub fn optimal_angles() -> HashMap<String, Vec<f32> > {
+    let mut angles = HashMap::new();
+    angles.insert(String::from("LMp"), vec![-10.0, -5.0, 35.0, 45.0 ]);
+    angles.insert(String::from("LMm"), vec![1.0, 5.0, 33.0, 43.0 ]);
+    angles.insert(String::from("LMd"), vec![40.0, 50.0, -40.0, -25.0 ]);
+    angles.insert(String::from("L1p"), vec![-45.0, -30.0, -40.0, -30.0 ]);
+    angles.insert(String::from("L2m"), vec![-10.0, -5.0, 35.0, 45.0 ]);
+    angles.insert(String::from("L3m"), vec![-10.0, -5.0, 35.0, 45.0  ]);
+    //"Rao(5-10), Cra(35-45)",
+    angles.insert(String::from("D1o"), vec![-27.0, -1.0, 66.0, 87.0 ]);
+    angles.insert(String::from("C1p"), vec![-30.0, -45.0, -40.0, -30.0 ]);
+   // "Lcx Dist",
+   // "Rao(5-10), Cra(35-45) ",
+    angles.insert(String::from("C3p"), vec![-10.0, -5.0, 35.0, 45.0 ]);
+    angles.insert(String::from("OMp"), vec![-33.0, -15.0, -41.0, -25.0 ]);
+    angles.insert(String::from("R1p"), vec![74.0, 84.0, 37.0, 45.0 ]);
+  
+    angles.insert(String::from("R2p"), vec![-45.0, -35.0, -10.0, -1.0 ]);
+ 
+    angles.insert(String::from("R4d"), vec![35.0, 52.0, 27.0, 41.0 ]);
+    angles.insert(String::from("RIm"), vec![-10.0, -5.0, 35.0, 45.0 ]);
+    
+    angles
 
+
+}//optimal_angles
+
+/***************************************************/
 pub fn get_optimal_views() -> [&'static str; 42] {
     let data = [
         "LM Ostium",

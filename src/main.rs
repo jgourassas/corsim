@@ -11,9 +11,9 @@ extern crate nalgebra as na;
 use na::Point3;
 //use na::RealField;
 //use std::cmp::Ordering;
-extern crate iset;
-use iset::IntervalMap;
-use iset::IntervalSet;
+//extern crate iset;
+//use iset::IntervalMap;
+//use iset::IntervalSet;
 
 extern crate ncollide3d; // If you need 3D.
 use ncollide2d::procedural::circle;
@@ -47,8 +47,9 @@ const OUTER_RADIOUS: f64 = 0.85;
 mod simcor_data_functions;
 
 use simcor_data_functions::{
-    get_diameter, get_midpoint_92, get_midpoint_color_92, get_optimal_views, get_segment_points_92,
-    get_segments_names_92,
+    get_diameter, get_midpoint_92, get_midpoint_color_92, 
+    get_optimal_views, get_segment_points_92, get_segments_names_92, 
+    optimal_angles,
 };
 
 //const SIZE_UNIT: f32 = 2.0;
@@ -278,7 +279,6 @@ pub fn main() {
         _ => (),
     }));
 
-    //table.draw_cell(Box::new("LM");
 
     but_ap_view.set_color(Color::from_rgb(102, 194, 165)); //blue light
     let mut gl_wind =
@@ -727,213 +727,56 @@ fn draw_collimator() {
     } //unsafe
 } //draw_collimator
 
-/**************************************************** */
+/****************************************************/
+
 fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
-    /**********vec_rao_lao / cr_caudal********************* */
-    // (lao -) (caudal -)
+  let angles = optimal_angles();
 
-    let lm_ostium_angles = vec![5.0, 10.0, 35.0, 45.0];
-    let lm_ostium_point = get_midpoint_92("LMp");
-    //  show_rao_lao_lights(&lm_ostium_angles, rotate_rao_lao);
-   
+  for (point_name, angle_vec) in angles.iter() {
+     
+    if   rotate_rao_lao > &angle_vec[0] && rotate_rao_lao < &angle_vec[1]
+     && rotate_cr_ca > &angle_vec[2]   && rotate_cr_ca < &angle_vec[3]  {
+        let point = get_midpoint_92(&point_name);
+          draw_marker(point, rotate_rao_lao, rotate_cr_ca);
+    }//if
+    
+}//for
 
-    let lm_bifurcation_angles = vec![-40.0, -50.0, -25.0, -40.0];
-    let lm_bifurcation_point = get_midpoint_92("LMd");
+show_rao_lao_lights(rotate_rao_lao);
+show_cr_ca_lights(rotate_cr_ca);
+}//set marker
 
-    let lad_proximal_angles = vec![30.0, 45.0, -30.0, -40.0];
-    let lad_proximal_point = get_midpoint_92("L1p");
+/**************************************************** */
 
-    //let lad_mid_angles = vec![5.0,  10.0 , 35.0, 45.0];
-    let lad_mid_point = get_midpoint_92("L2d");
+fn show_rao_lao_lights(rao_lao: &f32){
+    let angles = optimal_angles();
 
-    let lad_d1_angles = vec![-35.0, -45.0, 25.0, 35.0];
-    let lad_d1_point = get_midpoint_92("D1o");
-
-    let lad_distal_angles = vec![30.0, 35.0, -30.0, -40.0];
-    let lad_distal_point = get_midpoint_92("L4m");
-
-    let lcx_proximal_point = get_midpoint_92("C1p");
-
-    // LCx Distal   | ---   | RAO 5 - 10     | CRA 35 - 45     |
-    // let lcx_distal_angles = vec![5.0, 10.0 , 35.0, 45.0];
-    let lcx_distal_point = get_midpoint_92("C3d");
-
-    let lcx_om_angles = vec![-15.0, -35.0, -25.0, -41.0];
-    let lcx_om_point = get_midpoint_92("OMp");
-
-    // RCA Ostium    |LAO 64, CAU 51       | LAO 49 - 79        | CAU 42 - 61 |
-    //let rca_ostium = vec![30.0, 35.0 , 30.0, 40.0];
-    let rca_ostium_point = get_midpoint_92("R1p");
-
-    //RCA Proximal     | LAO 79, CRA 41 | LAO 74 - 84 | CRA 37 - 45     |
-    let rca_proximal_angles = vec![-74.0, -84.0, -37.0, -45.0];
-    let rca_proximal_point = get_midpoint_92("R1m");
-
-    //RCA Mid     | --- | Lateral | CAU 10 - 30     |
-    let rca_mid_angles = vec![-70.0, -90.0, -10.0, -30.0];
-    let rca_mid_point = get_midpoint_92("R2m");
-
-    //RCA CRUX     | ---               | RAO 5 - 10          | CRA 35 - 45 |
-    let rca_crux_angles = vec![5.0, 10.0, 35.0, 45.0];
-    //let rca_crux_angles = vec![-35.0, -52.0, 27.0, 41.0];
-    let rca_crux_point = get_midpoint_92("R4p");
-
-    show_rao_lao_lights(rotate_rao_lao);
-    show_cr_ca_lights(rotate_cr_ca);
-   
-    /*
-     let marker_pos = match rotate_rao_lao {
-      _ if  rotate_rao_lao >= &lm_ostium_angles[0]
-        && rotate_rao_lao <= &lm_ostium_angles[1]
-        && rotate_cr_ca >= &lm_ostium_angles[2]
-        && rotate_cr_ca <= &lm_ostium_angles[3] =>
-    {
-        draw_marker(lm_ostium_point, rotate_rao_lao, rotate_cr_ca);
-        draw_marker(lad_mid_point, rotate_rao_lao, rotate_cr_ca);
-        draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca);
-        draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca);
-    }//
-
-    _ => println!("something else")
-
-     };
-    */
-
-    match rotate_rao_lao {
-        _ if rotate_rao_lao > &lm_ostium_angles[0]
-            && rotate_rao_lao < &lm_ostium_angles[1]
-            && rotate_cr_ca > &lm_ostium_angles[2]
-            && rotate_cr_ca < &lm_ostium_angles[3] =>
+    for (point_name, angle_vec) in angles.iter() {
+       
+      if   rao_lao > &angle_vec[0] && rao_lao < &angle_vec[1]
         {
-            draw_marker(lm_ostium_point, rotate_rao_lao, rotate_cr_ca);
-            draw_marker(lad_mid_point, rotate_rao_lao, rotate_cr_ca);
-            draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca);
-            draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca);
-        }
-
-        _ if rotate_rao_lao < &lm_bifurcation_angles[0]
-            && rotate_rao_lao > &lm_bifurcation_angles[1]
-            && rotate_cr_ca < &lm_bifurcation_angles[2]
-            && rotate_cr_ca > &lm_bifurcation_angles[3] =>
-        {
-            draw_marker(lm_bifurcation_point, rotate_rao_lao, rotate_cr_ca);
-        }
-
-        _ if rotate_rao_lao > &lad_proximal_angles[0]
-            && rotate_rao_lao < &lad_proximal_angles[1]
-            && rotate_cr_ca < &lad_proximal_angles[2]
-            && rotate_cr_ca > &lad_proximal_angles[3] =>
-        {
-            draw_marker(lad_proximal_point, rotate_rao_lao, rotate_cr_ca);
-            draw_marker(lcx_proximal_point, rotate_rao_lao, rotate_cr_ca);
-            draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
-        }
-
-        _ if rotate_rao_lao < &lad_d1_angles[0]
-            && rotate_rao_lao > &lad_d1_angles[1]
-            && rotate_cr_ca > &lad_d1_angles[2]
-            && rotate_cr_ca < &lad_d1_angles[3] =>
-        {
-            draw_marker(lad_d1_point, rotate_rao_lao, rotate_cr_ca);
-        }
-        /*
-                _ if rotate_rao_lao > &lad_distal_angles[0]
-                    && rotate_rao_lao < &lad_distal_angles[1]
-                    && rotate_cr_ca < &lad_distal_angles[2]
-                    && rotate_cr_ca > &lad_distal_angles[3] =>
-                {
-                    draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
-                    //draw_marker(rca_ostium_point, rotate_rao_lao, rotate_cr_ca);
-                }
-        */
-        _ if rotate_rao_lao > &lad_distal_angles[0]
-            && rotate_rao_lao < &lad_distal_angles[1]
-            && rotate_cr_ca > &lad_distal_angles[2]
-            && rotate_cr_ca < &lad_distal_angles[3] =>
-        {
-            draw_marker(lad_distal_point, rotate_rao_lao, rotate_cr_ca);
-            draw_marker(rca_ostium_point, rotate_rao_lao, rotate_cr_ca);
-        }
-
-        /*
-                _ if rotate_rao_lao >  &lcx_distal_angles[0] && rotate_rao_lao <  &lcx_distal_angles[1]
-                                            && rotate_cr_ca >  &lcx_distal_angles[2] && rotate_cr_ca <  &lcx_distal_angles[3]
-                                                   =>  draw_marker(lcx_distal_point, rotate_rao_lao, rotate_cr_ca),
-        */
-        _ if rotate_rao_lao < &lcx_om_angles[0]
-            && rotate_rao_lao > &lcx_om_angles[1]
-            && rotate_cr_ca < &lcx_om_angles[2]
-            && rotate_cr_ca > &lcx_om_angles[3] =>
-        {
-            draw_marker(lcx_om_point, rotate_rao_lao, rotate_cr_ca);
-        }
-
-        _ if rotate_rao_lao < &rca_proximal_angles[0]
-            && rotate_rao_lao > &rca_proximal_angles[1]
-            && rotate_cr_ca < &rca_proximal_angles[2]
-            && rotate_cr_ca > &rca_proximal_angles[3] =>
-        {
-            draw_marker(rca_proximal_point, rotate_rao_lao, rotate_cr_ca)
-        }
-        _ if rotate_rao_lao < &rca_mid_angles[0]
-            && rotate_rao_lao > &rca_mid_angles[1]
-            && rotate_cr_ca < &rca_mid_angles[2]
-            && rotate_cr_ca > &rca_mid_angles[3] =>
-        {
-            draw_marker(rca_mid_point, rotate_rao_lao, rotate_cr_ca)
-        }
-
-        _ if rotate_rao_lao > &rca_crux_angles[0]
-            && rotate_rao_lao < &rca_crux_angles[1]
-            && rotate_cr_ca > &rca_crux_angles[2]
-            && rotate_cr_ca < &rca_crux_angles[3] =>
-        {
-            draw_marker(rca_crux_point, rotate_rao_lao, rotate_cr_ca)
-        }
-        _ => println!("something else"),
-    }
-} //set_market
-
-/************************************************* */
-fn check_rao_lao_intervals(rao_lao: &f32) -> bool {
-    let mut map = iset::IntervalMap::new();
-    map.insert(5.0..10.0, "LMp");
-    map.insert(-50.0..-40.0, "LMd");
-    map.insert(30.0..45.0, "L1p");
-    map.insert(5.0..10.0, "L2d");
-    map.insert(-45.0..-35.0, "D1o");
-    map.insert(30.0..35.0, "L4m");
-    map.insert(5.0..10.0, "C3d");
-    map.insert(-35.0..-15.0, "OMp");
-    map.insert(30.0..35.0, "R1p");
-    map.insert(-84.0..-74.0, "R1m");
-    map.insert(-90.0..-70.0, "R2m");
-    map.insert(5.0..10.0, "R4d");
-   
-   
-    /************************************/
-
-    // let a: Vec<_> = map.iter(..).collect();
-    let start: Vec<_> = map.intervals(rao_lao..).collect();
-   //let end: Vec<_> = map.intervals(..rao_lao).collect();
-   //println!("start {:?}", start );
-   // println!("end {:?}", end );
-    let response: bool;
-    if start.is_empty() == false && start[0].contains(rao_lao)   {
-        response = true;
-        return response
-    } else {
-        response = false;
-        return response
-    }
-
+           draw_rao_lao_lights() 
+      }//if
+      
+  }//for
 }
-/*************************************** */
-fn show_rao_lao_lights(rao_lao: &f32) {
-    let contains = check_rao_lao_intervals(rao_lao);
-    //println!("contains: {:?} ", contains);
+/************************************************* */
+fn show_cr_ca_lights(cr_ca: &f32){
+    let angles = optimal_angles();
 
-    if contains == true {
+    for (point_name, angle_vec) in angles.iter() {
+       
+      if   cr_ca > &angle_vec[2] && cr_ca < &angle_vec[3]
+        {
+           draw_cr_ca_lights();
+
+      }//if
+      
+  }//for
+}
+/************************************************* */
+/*************************************** */
+fn draw_rao_lao_lights() {
         unsafe {
             glPushMatrix();
             glEnable(GL_POINT_SMOOTH);
@@ -945,50 +788,11 @@ fn show_rao_lao_lights(rao_lao: &f32) {
             glEnd();
             glPopMatrix();
         } //unsafe
-    } //if
 } //show_lights
   /*************************************************/
-fn check_cr_ca_intervals(cr_ca: &f32) -> bool {
-    let mut map = iset::IntervalMap::new();
-    map.insert(35.0..45.0, "LMp");
-    map.insert(-40.0..-25.0, "LMd");
-    map.insert(-40.0..-30.0, "L1p");
-    map.insert(35.0..45.0, "L2d");
-    map.insert(25.0..35.0, "D1o");
-    map.insert(-40.0..-30.0, "L4m");
-    map.insert(35.0..45.0, "C3d");
-    map.insert(-41.0..-25.0, "OMp");
-    map.insert(-45.0..-37.0, "R1m");
-    map.insert(-30.0..-10.0, "R2m");
-    map.insert(35.0..45.0, "R4d");
-
-
-
-    /************************************/
-    // let a: Vec<_> = map.iter(..).collect();
-
-    let start: Vec<_> = map.intervals(cr_ca..).collect();
-    let end: Vec<_> = map.intervals(..cr_ca).collect();
-
-   // println!("cr_ca: {:?} ", cr_ca );
-   // println!("2 start 0 {:?}", start );
-    //println!("2 end {:?}", end );
-
-    let response: bool;
-
-    if start.is_empty() == false && start[0].contains(cr_ca)   {
-        response = true;
-        return response
-    } else {
-        response = false;
-        return response
-    }//if
-}//check_cr_ca_interval
 
 /************************************* */
-fn show_cr_ca_lights(cr_ca: &f32) {
-    let contains = check_cr_ca_intervals(cr_ca);
-    if contains == true {
+fn draw_cr_ca_lights() {
         unsafe {
             glPushMatrix();
             glEnable(GL_POINT_SMOOTH);
@@ -1000,7 +804,7 @@ fn show_cr_ca_lights(cr_ca: &f32) {
             glEnd();
             glPopMatrix();
         } //unsafe
-    } //if
+    
 } //show_lights
   /*************************************************/
 
