@@ -8,7 +8,9 @@ use std::rc::Rc;
 extern crate csv;
 
 extern crate nalgebra as na;
-use na::Point3;
+//use na::Point3;
+use na::{Point3, Isometry3, RealField, Vector3};
+
 //use na::RealField;
 //use std::cmp::Ordering;
 //extern crate iset;
@@ -17,6 +19,13 @@ use na::Point3;
 
 extern crate ncollide3d; // If you need 3D.
 use ncollide2d::procedural::circle;
+use ncollide3d::procedural::cylinder;
+
+use ncollide3d::shape::{Cuboid, ShapeHandle, Ball,  TriMesh, Cylinder, ConvexHull, Compound };
+
+
+//use ncollide3d::TriMesh;
+
 use ncollide3d::shape::Polyline;
 
 /********************************* */
@@ -426,7 +435,9 @@ fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32)
             draw_as_polyline_segment(&points, &color_vec, &diameters_vec, point_names[i]);
             i = i + 1;
         } //while
-        //draw_aortic_ring();
+        draw_aortic_ring();
+        
+
         glPopMatrix();
     } //unsafe
 } //draw_segments
@@ -718,7 +729,6 @@ fn draw_collimator() {
         //Trick
         glTranslatef(0.0, start as f32, 0.0);
         glRotatef(-90.0, 1.0, 0.0, 0.0);
-
         glScalef(0.016, 0.016, 0.016);
 
         let quadric = gluNewQuadric();
@@ -748,6 +758,9 @@ fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
 
 show_rao_lao_lights(rotate_rao_lao);
 show_cr_ca_lights(rotate_cr_ca);
+
+draw_spine(rotate_rao_lao);
+
 }//set marker
 
 /**************************************************** */
@@ -755,7 +768,7 @@ show_cr_ca_lights(rotate_cr_ca);
 fn show_rao_lao_lights(rao_lao: &f32){
     let angles = optimal_angles();
 
-    for (point_name, angle_vec) in angles.iter() {
+    for (_point_name, angle_vec) in angles.iter() {
        
       if   rao_lao > &angle_vec[0] && rao_lao < &angle_vec[1]
         {
@@ -768,7 +781,7 @@ fn show_rao_lao_lights(rao_lao: &f32){
 fn show_cr_ca_lights(cr_ca: &f32){
     let angles = optimal_angles();
 
-    for (point_name, angle_vec) in angles.iter() {
+    for (_point_name, angle_vec) in angles.iter() {
        
       if   cr_ca > &angle_vec[2] && cr_ca < &angle_vec[3]
         {
@@ -815,9 +828,15 @@ fn draw_cr_ca_lights() {
 fn draw_marker(center: Vec<f32>, rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
     let mut j = 0;
     unsafe {
+        //circle = diameter: &<P as EuclideanSpace>::Real, 
+        //nsubdivs: u32
+        //-> Polyline<P> 
+        
         let polyline = circle(&0.8, 64);
 
         glPushMatrix();
+        
+
         glTranslatef(-0.2, 0.2, 0.0);
         glRotatef(*rotate_cr_ca, 1.0, 0.0, 0.0); //x
         glRotatef(*rotate_rao_lao, 0.0, 1.0, 0.0); //y axis
@@ -866,28 +885,86 @@ fn draw_data(txt: &str, x: i32, y: i32, w: i32, h: i32, selected: bool) {
 /******************************************************** */
 //glScalef(0.5, 1.0, 1.0);
     fn draw_aortic_ring() {
-        //void gluSphere(	GLUquadric* quad,
-        //GLdouble radius,
-        //GLint slices,
-        //GLint stacks);
+
         unsafe {
-            // GLUquadricObj *qobj;
             let qobj = gluNewQuadric();
-            glPushMatrix();
-            //glColor3f(1.0, 0.0, 0.0); // red
-            //glColor3ub(204,235,197);//light gree
-            glColor3ub(179,205,227 );//light gree
-            glTranslatef(-0.2, -0.1, 0.0);
-            glScalef(1.1, 0.5, 1.1);
-           // gluQuadricDrawStyle(qobj, GLU_FILL); /* smooth shaded */
-          //  gluQuadricDrawStyle(qobj, GLU_SILHOUETTE);
-            gluQuadricNormals(qobj, GLU_SMOOTH);
-            //gluSphere(qobj, 1.1, 100, 150);
-            
-            gluDisk(qobj, 1.0, 1.05, 150, 120);
+
+         glPushMatrix();
+         gluQuadricNormals(qobj, GLU_SMOOTH);
+         gluQuadricOrientation(qobj,GLU_OUTSIDE);
+         gluQuadricTexture(qobj, GL_TRUE as u8);
+         glLineWidth(1.4);       
+
+        //glColor3f(1.0, 0.0, 0.0); // red
+        //glColor3ub(204,235,197);//light gree
+        glColor3ub(250,159,181);
+             //Trick
+         glTranslatef(-0.2, 0.1, 0.0);
+         glRotatef(-10.0, 1.0, 0.0, 0.0);
+         glRotatef(-50.0, 0.0, 1.0, 0.0);   
+         glScalef(1.1, 0.5, 1.1);
+           
+        //gluQuadricDrawStyle(qobj, GLU_FILL); /* smooth shaded */
+        //gluQuadricDrawStyle(qobj, GLU_SILHOUETTE);
+
+           gluDisk(qobj, 1.0, 1.1, 150, 120);
+           
+           glBegin(GL_LINE_STRIP);
+           glVertex3f(-1.0, 0.2, 0.0);
+           glVertex3f(0.01, 0.0, 0.0);
+           
+           glVertex3f(0.40, -1.0, 0.0);
+
+           glVertex3f(0.01, 0.0, 0.0);
+           glVertex3f(0.2, 1.0, 0.0);
+
+           glEnd();
+
             glPopMatrix();
     
             gluDeleteQuadric(qobj);
         } //unsafe
     } //render_triagle
     
+fn draw_spine(rao_lao: &f32){
+  let incr = 0.05;
+  let spine_left = *rao_lao * 0.003;
+//   let spine_front = *rao_lao * 0.01;
+//rao spine in th left
+//lao spine in the rigth
+
+    unsafe{
+
+/********************************************** */
+
+glPushMatrix();
+    
+    glPointSize(12.0);
+    glTranslatef(-spine_left,  0.0, 0.0);    
+    //glColor3f(0.0, 0.0, 1.0);
+glColor3ub(43,140,190 );
+
+    glBegin(GL_POINTS);
+    glVertex3f(-0.2 , -0.7, 0.0);
+    glVertex3f(-0.2,   0.7, 0.0);
+
+    glVertex3f(-0.2, -0.7 - incr, 0.0);
+    glVertex3f(-0.2,  0.7 - incr, 0.0);
+
+   glVertex3f(-0.2, -0.7 + incr, 0.0);
+   glVertex3f(-0.2,  0.7 + incr, 0.0);
+   
+    glEnd();
+
+
+    glFlush();   
+  
+glPopMatrix();
+//glDisable(GL_BLEND); //restore blending options
+
+/****************************************** */
+
+
+   }//unsafe   
+
+}//draw_spine
