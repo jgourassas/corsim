@@ -1,9 +1,9 @@
 [package]
 name = "corsim"
 version = "0.1.0"
-authors = ["jgourassas <jgourassas@gmail.com>"]
+authors = ["J.Gourassas <jgourassas@gmail.com>"]
 edition = "2018"
-description = "Coronary Rotations in Rust"
+description = "Coronary artery views in Rust"
 keywords = ["coronary", "graphics", "Rust"]
 license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

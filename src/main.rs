@@ -1,15 +1,24 @@
+#![allow(non_snake_case)]
+
 use fltk::*;
 use fltk::{button::*, frame::*, valuator::*, window::*};
 use glu_sys::*;
 use std::cell::RefCell;
+
+//use std::ptr;
+//use std::mem;
+//use std::os::raw::c_void;
+//use std::ffi::CStr;
+
+
 //use std::fmt;
 //use std::iter;
 use std::rc::Rc;
 extern crate csv;
 
 extern crate nalgebra as na;
-//use na::Point3;
-use na::{Point3, Isometry3, RealField, Vector3};
+use na::Point3;
+//use na::{Isometry3, Point3, RealField, Vector3};
 
 //use na::RealField;
 //use std::cmp::Ordering;
@@ -19,16 +28,15 @@ use na::{Point3, Isometry3, RealField, Vector3};
 
 extern crate ncollide3d; // If you need 3D.
 use ncollide2d::procedural::circle;
-use ncollide3d::procedural::cylinder;
+//use ncollide3d::procedural::cylinder;
 
-use ncollide3d::shape::{Cuboid, ShapeHandle, Ball,  TriMesh, Cylinder, ConvexHull, Compound };
-
+//use ncollide3d::shape::{Ball, Compound, ConvexHull, Cuboid, Cylinder, ShapeHandle, TriMesh};
 
 //use ncollide3d::TriMesh;
 
 use ncollide3d::shape::Polyline;
 
-/********************************* */
+/******test *************************** */
 
 /**************************************/
 const MARGIN_TOP: i32 = 50;
@@ -56,10 +64,8 @@ const OUTER_RADIOUS: f64 = 0.85;
 mod simcor_data_functions;
 
 use simcor_data_functions::{
-    get_diameter, get_midpoint_92, get_midpoint_color_92, 
-    get_optimal_views, get_segment_points_92, get_segments_names_92, 
-    optimal_angles, 
-
+    get_diameter, get_midpoint_92, get_midpoint_color_92, get_optimal_views, get_segment_points_92,
+    get_segments_names_92, optimal_angles,
 };
 
 //const SIZE_UNIT: f32 = 2.0;
@@ -135,7 +141,7 @@ pub fn main() {
     widget_rao_lao.set_color(Color::from_rgb(158, 188, 218)); //
     widget_rao_lao.set_frame(FrameType::RoundUpBox);
     widget_rao_lao.set_bounds(-90.0, 90.0);
-   // widget_rao_lao.set_bounds(-180.0, 180.0);
+    // widget_rao_lao.set_bounds(-180.0, 180.0);
     widget_rao_lao.set_step(1.0, 1);
     widget_rao_lao.set_label_size(18);
     widget_rao_lao.set_trigger(CallbackTrigger::Changed);
@@ -289,7 +295,6 @@ pub fn main() {
         _ => (),
     }));
 
-
     but_ap_view.set_color(Color::from_rgb(102, 194, 165)); //blue light
     let mut gl_wind =
         window::GlWindow::new(10, 10, GL_WINDOW_WIDTH, GL_WINDOW_HEIGHT, "GL WINDOW!");
@@ -383,6 +388,7 @@ fn draw_scene(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
 fn setup_gl() {
     unsafe {
         glClearColor(0.0, 0.0, 0.0, 0.0);
+       // glClearColor(64.0/255.0, 64.0/255.0, 64.0/255.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -393,9 +399,12 @@ fn setup_gl() {
         // Disable backface culling to render both sides of polygons
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
         //glEnable(GL_POINT_SMOOTH);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+     
         glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_MULTISAMPLE);
     } //usafe
 }
 
@@ -404,6 +413,8 @@ fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32)
 
     let mut points = vec![];
     let mut diameters_vec = vec![];
+    let mut midpoint_names_vec = vec![];
+
 
     let mut i = 0;
     unsafe {
@@ -420,7 +431,7 @@ fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32)
         while i < point_names.len() {
             let midpoint = get_midpoint_92(&point_names[i]);
             let color_vec: Vec<u8> = get_midpoint_color_92(point_names[i]);
-            //println!("point_names: {:?}", point_names[i] );
+            
             let diameter: f32 = get_diameter(point_names[i]);
             diameters_vec.push(diameter);
 
@@ -430,13 +441,19 @@ fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32)
 
             points.push(Point3::new(x, y, z));
 
+            midpoint_names_vec.push(point_names[i]);
             // draw_as_bezier_segment(&points, &color_vec, &diameters_vec, point_names[i]);
 
-            draw_as_polyline_segment(&points, &color_vec, &diameters_vec, point_names[i]);
+            draw_as_polyline_segment(&points, 
+                &color_vec, 
+                &diameters_vec, 
+                &midpoint_names_vec);
+
+
+
             i = i + 1;
         } //while
         draw_aortic_ring();
-        
 
         glPopMatrix();
     } //unsafe
@@ -482,9 +499,121 @@ glPopMatrix();
 
 } //draw_segment
 */
+
+
+fn draw_as_polyline_segment(
+    points: &[Point3<f32>],
+    color: &Vec<u8>,
+    diameters: &Vec<f32>,
+    midpoint_names: &Vec<&str>,
+) {
+    
+
+    let polyline = Polyline::new(points.to_vec(), None);
+
+    unsafe {
+
+/****************************************** */
+
+
+       
+/*************STAR DRAW POLYLINE****************************************** */
+//let qobj = gluNewQuadric();
+glPushMatrix();//start 1
+    /************START TEST LIGHT****************************** */
+/*
+    //Red rubber
+    let  mat_ambient =  [0.05,0.0,0.0,1.0 ];
+    let  mat_diffuse =  [0.5,0.4,0.4,1.0 ];
+    let  mat_specular = [0.7,0.04,0.04,1.0];
+    let  light_position = [1.0,1.0,1.0,0.0];
+
+    glMaterialfv(GL_FRONT,GL_AMBIENT, mat_ambient.as_ptr());
+    glMaterialfv(GL_FRONT,GL_DIFFUSE, mat_diffuse.as_ptr());
+    glMaterialfv(GL_FRONT,GL_SPECULAR,mat_specular.as_ptr());
+    glLightfv(GL_LIGHT0, GL_POSITION,light_position.as_ptr());
+    
+    glMaterialf(GL_FRONT,GL_SHININESS, 10.0);
+   
+    glColorMaterial(GL_FRONT,GL_DIFFUSE);
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_NORMALIZE);
+   // glFrontFace(GL_CW);
+*/
+
+    /************END START LIGHT**********************************/
+        glColor3ub(color[0], color[1], color[2]);
+        let mut j = 0;
+
+        while j <  polyline.points().len() {
+       
+       glPushMatrix();//start 2
+            glLineWidth(diameters[j] * SIZE_UNIT * 0.7 );
+    /******************************/
+      
+    /************************************* */
+      //  glBegin(GL_POINTS);
+       glBegin(GL_LINE_STRIP);  
+        glVertex3f(
+              polyline.points()[j][0],
+              polyline.points()[j][1],
+              polyline.points()[j][2],
+            );
+             j = j + 1;
+        }
+        
+        glEnd();
+        //glFlush();
+
+        glPopMatrix();//end 2
+
+      //  glDisable(GL_LIGHTING);
+        glPopMatrix();//end 1
+
+/*************END DRAW POLYLINE****************************************** */
+
+/***************START DRAW POINTS***************************** */
+        glPushMatrix();//STARTT 1
+        
+        glColor3ub(color[0], color[1], color[2]);
+        
+        let mut k = 0;
+
+         while k < polyline.points().len() {
+
+         glPushMatrix();//START 2  
+
+         glPointSize(diameters[k] * SIZE_UNIT * 0.5 );
+         glBegin(GL_POINTS );
+             glVertex3f(
+                polyline.points()[k][0],
+                polyline.points()[k][1],
+                polyline.points()[k][2],
+            );
+
+            k = k + 1;
+        }
+        
+        glEnd();
+
+        //glRasterPos2f(-3.0, -2.0);
+        //glFlush();
+
+       glPopMatrix();//END 2 
+
+
+       glPopMatrix();//END 1 
+
+/***************END DRAW POINTS***************************** */
+
+    } //unsafe
+} //draw_segment
 /////
 /***********************************************************/
-fn draw_as_polyline_segment(
+/*
+fn draw_as_polyline_segment_1(
     points: &[Point3<f32>],
     color: &Vec<u8>,
     diameters: &Vec<f32>,
@@ -533,6 +662,7 @@ fn draw_as_polyline_segment(
         glPopMatrix();
     } //unsafe
 } //draw_segment
+*/
 
 /***********************************************************/
 
@@ -586,7 +716,7 @@ fn draw_arm(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
         draw_digital_camera();
         //draw_cylinder(SLICES: i8, STACKS: i8, SCALE_X: f32, SCALE_Y: f32, SCALE_Z: f32)
         //glScalef(0.5, 1.0, 1.0);
-     
+
         /*********************************************** */
 
         glPopMatrix();
@@ -744,98 +874,89 @@ fn draw_collimator() {
 /****************************************************/
 
 fn set_marker(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
-  let angles = optimal_angles();
+    let angles = optimal_angles();
 
-  for (point_name, angle_vec) in angles.iter() {
-     
-    if   rotate_rao_lao > &angle_vec[0] && rotate_rao_lao < &angle_vec[1]
-     && rotate_cr_ca > &angle_vec[2]   && rotate_cr_ca < &angle_vec[3]  {
-        let point = get_midpoint_92(&point_name);
-          draw_marker(point, rotate_rao_lao, rotate_cr_ca);
-    }//if
-    
-}//for
+    for (point_name, angle_vec) in angles.iter() {
+        if rotate_rao_lao > &angle_vec[0]
+            && rotate_rao_lao < &angle_vec[1]
+            && rotate_cr_ca > &angle_vec[2]
+            && rotate_cr_ca < &angle_vec[3]
+        {
+            let point = get_midpoint_92(&point_name);
+            draw_marker(point, rotate_rao_lao, rotate_cr_ca);
+        } //if
+    } //for
 
-show_rao_lao_lights(rotate_rao_lao);
-show_cr_ca_lights(rotate_cr_ca);
+    show_rao_lao_lights(rotate_rao_lao);
+    show_cr_ca_lights(rotate_cr_ca);
 
-draw_spine(rotate_rao_lao);
-
-}//set marker
+    draw_spine(rotate_rao_lao);
+} //set marker
 
 /**************************************************** */
 
-fn show_rao_lao_lights(rao_lao: &f32){
+fn show_rao_lao_lights(rao_lao: &f32) {
     let angles = optimal_angles();
 
     for (_point_name, angle_vec) in angles.iter() {
-       
-      if   rao_lao > &angle_vec[0] && rao_lao < &angle_vec[1]
-        {
-           draw_rao_lao_lights() 
-      }//if
-      
-  }//for
+        if rao_lao > &angle_vec[0] && rao_lao < &angle_vec[1] {
+            draw_rao_lao_lights()
+        } //if
+    } //for
 }
 /************************************************* */
-fn show_cr_ca_lights(cr_ca: &f32){
+fn show_cr_ca_lights(cr_ca: &f32) {
     let angles = optimal_angles();
 
     for (_point_name, angle_vec) in angles.iter() {
-       
-      if   cr_ca > &angle_vec[2] && cr_ca < &angle_vec[3]
-        {
-           draw_cr_ca_lights();
-
-      }//if
-      
-  }//for
+        if cr_ca > &angle_vec[2] && cr_ca < &angle_vec[3] {
+            draw_cr_ca_lights();
+        } //if
+    } //for
 }
-/************************************************* */
 /*************************************** */
 fn draw_rao_lao_lights() {
-        unsafe {
-            glPushMatrix();
-            glEnable(GL_POINT_SMOOTH);
-            //glColor3ub(255,255,191); //light yellow
-            glColor3ub(158, 188, 218); //
-            glPointSize(10.0 * SIZE_UNIT * 1.0);
-            glBegin(GL_POINTS);
-            glVertex3f(0.9, -0.9, 0.0);
-            glEnd();
-            glPopMatrix();
-        } //unsafe
+    unsafe {
+        glPushMatrix();
+        glEnable(GL_POINT_SMOOTH);
+        //glColor3ub(255,255,191); //light yellow
+        glColor3ub(158, 188, 218); //
+        glPointSize(10.0 * SIZE_UNIT * 1.0);
+        glBegin(GL_POINTS);
+        glVertex3f(0.9, -0.9, 0.0);
+        glEnd();
+        glPopMatrix();
+    } //unsafe
 } //show_lights
   /*************************************************/
 
-/************************************* */
 fn draw_cr_ca_lights() {
-        unsafe {
-            glPushMatrix();
-            glEnable(GL_POINT_SMOOTH);
-            //glColor3ub(255,255,191); //light yellow
-            glColor3ub(136, 86, 167); //
-            glPointSize(10.0 * SIZE_UNIT * 1.0);
-            glBegin(GL_POINTS);
-            glVertex3f(0.8, -0.9, 0.0);
-            glEnd();
-            glPopMatrix();
-        } //unsafe
-    
+    unsafe {
+        glPushMatrix();
+        glEnable(GL_POINT_SMOOTH);
+        //glColor3ub(255,255,191); //light yellow
+        glColor3ub(136, 86, 167); //
+        glPointSize(10.0 * SIZE_UNIT * 1.0);
+        glBegin(GL_POINTS);
+        glVertex3f(0.8, -0.9, 0.0);
+        glEnd();
+        glPopMatrix();
+    } //unsafe
 } //show_lights
   /*************************************************/
+
+/******************************************************** */
 
 fn draw_marker(center: Vec<f32>, rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
     let mut j = 0;
     unsafe {
-        //circle = diameter: &<P as EuclideanSpace>::Real, 
+        //circle = diameter: &<P as EuclideanSpace>::Real,
         //nsubdivs: u32
-        //-> Polyline<P> 
-        
+        //-> Polyline<P>
+
         let polyline = circle(&0.8, 64);
 
         glPushMatrix();
-        
 
         glTranslatef(-0.2, 0.2, 0.0);
         glRotatef(*rotate_cr_ca, 1.0, 0.0, 0.0); //x
@@ -884,87 +1005,76 @@ fn draw_data(txt: &str, x: i32, y: i32, w: i32, h: i32, selected: bool) {
 
 /******************************************************** */
 //glScalef(0.5, 1.0, 1.0);
-    fn draw_aortic_ring() {
+fn draw_aortic_ring() {
+    unsafe {
+        let qobj = gluNewQuadric();
 
-        unsafe {
-            let qobj = gluNewQuadric();
+        glPushMatrix();
+        gluQuadricNormals(qobj, GLU_SMOOTH);
+        gluQuadricOrientation(qobj, GLU_OUTSIDE);
+        gluQuadricTexture(qobj, GL_TRUE as u8);
+        glLineWidth(1.4);
 
-         glPushMatrix();
-         gluQuadricNormals(qobj, GLU_SMOOTH);
-         gluQuadricOrientation(qobj,GLU_OUTSIDE);
-         gluQuadricTexture(qobj, GL_TRUE as u8);
-         glLineWidth(1.4);       
+        glColor3ub(250, 159, 181);
+        //Trick
+        glTranslatef(-0.2, 0.1, 0.0);
+        glRotatef(-10.0, 1.0, 0.0, 0.0);
+        glRotatef(-50.0, 0.0, 1.0, 0.0);
+        glScalef(1.1, 0.5, 1.1);
 
-        //glColor3f(1.0, 0.0, 0.0); // red
-        //glColor3ub(204,235,197);//light gree
-        glColor3ub(250,159,181);
-             //Trick
-         glTranslatef(-0.2, 0.1, 0.0);
-         glRotatef(-10.0, 1.0, 0.0, 0.0);
-         glRotatef(-50.0, 0.0, 1.0, 0.0);   
-         glScalef(1.1, 0.5, 1.1);
-           
-        //gluQuadricDrawStyle(qobj, GLU_FILL); /* smooth shaded */
-        //gluQuadricDrawStyle(qobj, GLU_SILHOUETTE);
+        gluDisk(qobj, 1.0, 1.1, 150, 120);
 
-           gluDisk(qobj, 1.0, 1.1, 150, 120);
-           
-           glBegin(GL_LINE_STRIP);
-           glVertex3f(-1.0, 0.2, 0.0);
-           glVertex3f(0.01, 0.0, 0.0);
-           
-           glVertex3f(0.40, -1.0, 0.0);
+        glBegin(GL_LINE_STRIP);
+        glVertex3f(-1.0, 0.2, 0.0);
+        glVertex3f(0.01, 0.0, 0.0);
 
-           glVertex3f(0.01, 0.0, 0.0);
-           glVertex3f(0.2, 1.0, 0.0);
+        glVertex3f(0.40, -1.0, 0.0);
 
-           glEnd();
+        glVertex3f(0.01, 0.0, 0.0);
+        glVertex3f(0.2, 1.0, 0.0);
 
-            glPopMatrix();
-    
-            gluDeleteQuadric(qobj);
-        } //unsafe
-    } //render_triagle
-    
-fn draw_spine(rao_lao: &f32){
-  let incr = 0.05;
-  let spine_left = *rao_lao * 0.003;
-//   let spine_front = *rao_lao * 0.01;
-//rao spine in th left
-//lao spine in the rigth
+        glEnd();
 
-    unsafe{
+        glPopMatrix();
 
-/********************************************** */
+        gluDeleteQuadric(qobj);
+    } //unsafe
+} //render_triagle
 
-glPushMatrix();
-    
-    glPointSize(12.0);
-    glTranslatef(-spine_left,  0.0, 0.0);    
-    //glColor3f(0.0, 0.0, 1.0);
-glColor3ub(43,140,190 );
+fn draw_spine(rao_lao: &f32) {
+    let incr = 0.05;
+    let spine_left = *rao_lao * 0.003;
+    //rao spine in th left
+    //lao spine in the rigth
 
-    glBegin(GL_POINTS);
-    glVertex3f(-0.2 , -0.7, 0.0);
-    glVertex3f(-0.2,   0.7, 0.0);
+    unsafe {
+        /********************************************** */
+        glPushMatrix();
 
-    glVertex3f(-0.2, -0.7 - incr, 0.0);
-    glVertex3f(-0.2,  0.7 - incr, 0.0);
+        glPointSize(12.0);
+        glTranslatef(-spine_left, 0.0, 0.0);
+        glColor3ub(43, 140, 190);
 
-   glVertex3f(-0.2, -0.7 + incr, 0.0);
-   glVertex3f(-0.2,  0.7 + incr, 0.0);
-   
-    glEnd();
+        glBegin(GL_POINTS);
+        glVertex3f(-0.2, -0.7, 0.0);
+        glVertex3f(-0.2, 0.7, 0.0);
 
+        glVertex3f(-0.2, -0.7 - incr, 0.0);
+        glVertex3f(-0.2, 0.7 - incr, 0.0);
 
-    glFlush();   
-  
-glPopMatrix();
-//glDisable(GL_BLEND); //restore blending options
+        glVertex3f(-0.2, -0.7 + incr, 0.0);
+        glVertex3f(-0.2, 0.7 + incr, 0.0);
 
-/****************************************** */
+        glEnd();
 
+        glFlush();
 
-   }//unsafe   
+        glPopMatrix();
+        //glDisable(GL_BLEND); //restore blending options
 
-}//draw_spine
+        /****************************************** */
+    } //unsafe
+/**************************************************** */
+
+/**********************************************************/
+} //draw_spine
