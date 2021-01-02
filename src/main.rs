@@ -1,9 +1,31 @@
+
+
+//First install https://github.com/burtonageo/cargo-bundle then run cargo bundle --release [target]
+//For your OS run bundle --release ( cargo bundle)
+// for Debian find executable in corsim/target/debug/bundle/deb/corsim_1.0.0_amd64/data/usr/bin/corsim
+// If cairo.h not found-> change pangocairo.h to include your cairo.h
+
 #![allow(non_snake_case)]
 
 use fltk::*;
 use fltk::{button::*, frame::*, valuator::*, window::*};
+use fltk::dialog::{message};
+/*
+use fltk::{
+    app::{App, AppScheme, channel},
+    browser::Browser,
+    button::{Button, CheckButton},
+    dialog:: {FileChooser, FileChooserType, message},
+    input::{IntInput},
+    prelude::*,
+    window::DoubleWindow,
+};
+*/
 use glu_sys::*;
+
 use std::cell::RefCell;
+use std::rc::Rc;
+use std::{error::Error, fmt, panic, thread, time};
 
 //use std::ptr;
 //use std::mem;
@@ -13,7 +35,6 @@ use std::cell::RefCell;
 
 //use std::fmt;
 //use std::iter;
-use std::rc::Rc;
 extern crate csv;
 
 extern crate nalgebra as na;
@@ -61,12 +82,16 @@ const FRAME_INFO_WIDTH: i32 = FLTK_WINDOW_WIDTH - (GL_WINDOW_WIDTH + 12);
 const FRAME_INFO_HEIGHT: i32 = GL_WINDOW_HEIGHT - 370;
 
 const OUTER_RADIOUS: f64 = 0.85;
+
 mod simcor_data_functions;
 
 use simcor_data_functions::{
     get_diameter, get_midpoint_92, get_midpoint_color_92, get_optimal_views, get_segment_points_92,
     get_segments_names_92, optimal_angles,
+   // get_rca_segments_names_92, get_left_segments_names_92, 
 };
+
+
 
 //const SIZE_UNIT: f32 = 2.0;
 /*
@@ -86,19 +111,24 @@ pub enum Message {
     Raolao,
     Crca,
     AnteriorPosterior,
+    RcaOnly,
+    LeftOnly
 }
+
+
 
 pub fn main() {
     //get_data_92();
     // get_branch_data_92();
-
+    panic::set_hook(Box::new(|panic_info| { message(200, 200, &panic_info.to_string());}));
+   
     let app = app::App::default().with_scheme(app::Scheme::Gtk);
     let mut fltk_wind = Window::new(
         100,
         100,
         FLTK_WINDOW_WIDTH,
         FLTK_WINDOW_HEIGHT,
-        "CORONARY Views. By John Gkourasas (J. Gourassas)",
+        "CORONARY Views. By John Gkourasas (old J. Gourassas)",
     );
 
     //let mut frame = Frame::new(0, 0, FLTK_WINDOW_WIDTH,  FLTK_WINDOW_HEIGHT, "FRAME");
@@ -216,7 +246,8 @@ pub fn main() {
         40,
         "Quit➤",
     );
-    but_quit.set_color(Color::from_rgb(183, 19, 19)); //red
+    but_quit.set_color(Color::from_rgb(251,180,174)); //red
+    but_quit.set_label_size(18);
                                                       // but_quit.set_color(Color::from_rgb(102,194,165)); //green
     but_quit.set_callback(Box::new(move || cb_quit()));
 
@@ -228,13 +259,36 @@ pub fn main() {
         "A-P View",
     );
 
+/*
+    let mut but_rca_only = Button::new(
+        FLTK_WINDOW_WIDTH - 220,
+        FLTK_WINDOW_HEIGHT - 450,
+        70,
+        40,
+        "RCA Only",
+    );
+
+    but_rca_only.set_color(Color::from_rgb(255,255,204)); //red
+    but_rca_only.set_label_size(14);
+
+    let mut but_left_only = Button::new(
+        FLTK_WINDOW_WIDTH - 100,
+        FLTK_WINDOW_HEIGHT - 450,
+        70,
+        40,
+        "Left Only",
+    );
+    but_left_only.set_color(Color::from_rgb(255,255,204)); 
+    but_left_only.set_label_size(14);
+*/
+
     //Frame -> FLTK BOX = X,Y W, H
     //  const FLTK_WINDOW_HEIGHT: i32 = 1200 - MARGIN_TOP - MARGIN_BOTTOM;
     let mut frame_info_view = Frame::new(
         FRAME_INFO_X,
         FRAME_INFO_Y,
         FRAME_INFO_WIDTH,
-        FRAME_INFO_HEIGHT,
+        FRAME_INFO_HEIGHT -200,
         "Info View",
     );
     //  Frame::new(FLTK_WINDOW_WIDTH - 60, MARGIN_TOP - 150, FRAME_INFO_WIDTH , FRAME_INFO_HEIGHT, "Info View");
@@ -247,7 +301,7 @@ pub fn main() {
         FRAME_INFO_X,
         FRAME_INFO_Y + 20,
         FRAME_INFO_WIDTH - 10,
-        FRAME_INFO_HEIGHT - 10,
+        FRAME_INFO_HEIGHT - 195,
         "OPTIMAL VIEWS",
     );
     table.set_rows(14);
@@ -295,10 +349,12 @@ pub fn main() {
         _ => (),
     }));
 
-    but_ap_view.set_color(Color::from_rgb(102, 194, 165)); //blue light
+    but_ap_view.set_color(Color::from_rgb(161,215,106)); //blue light
+
     let mut gl_wind =
         window::GlWindow::new(10, 10, GL_WINDOW_WIDTH, GL_WINDOW_HEIGHT, "GL WINDOW!");
-    gl_wind.make_resizable(true);
+    
+     gl_wind.make_resizable(true);
 
     let rao_lao = Rc::from(RefCell::from(0.0));
     let rao_lao_c = rao_lao.clone();
@@ -306,9 +362,15 @@ pub fn main() {
     let cr_ca = Rc::from(RefCell::from(0.0));
     let cr_ca_c = cr_ca.clone();
 
+
     gl_wind.draw(Box::new(move || {
+        setup_gl();
         draw_scene(&rao_lao_c.borrow(), &cr_ca_c.borrow())
+        //setup_gl();
+        //draw_rca_scene(&rao_lao_c.borrow(), &cr_ca_c.borrow()); 
+        //draw_left_scene(&rao_lao_c.borrow(), &cr_ca_c.borrow());
     }));
+
     gl_wind.end();
     gl_wind.show();
 
@@ -317,6 +379,8 @@ pub fn main() {
     fltk_wind.show();
 
     let (s, r) = app::channel::<(Message, f32)>();
+
+ 
 
     widget_rao_lao.set_callback(Box::new(move || {
         let angle_rao_lao = widget_rao_lao_c.value() as f32;
@@ -335,6 +399,8 @@ pub fn main() {
         s.send(msg)
     }));
 
+   
+
     while app.wait().unwrap() {
         match r.recv() {
             Some((Message::Raolao, rao_angle)) => {
@@ -342,12 +408,13 @@ pub fn main() {
                 frame_rao_lao.set_label(&(rao_angle).to_string());
 
                 gl_wind.redraw();
-            }
+            },
             Some((Message::Crca, cr_angle)) => {
                 *cr_ca.borrow_mut() = cr_angle;
                 frame_cr_ca.set_label(&(cr_angle).to_string());
                 gl_wind.redraw();
-            }
+            },
+
             Some((Message::AnteriorPosterior, angle)) => {
                 *rao_lao.borrow_mut() = angle;
                 *cr_ca.borrow_mut() = angle;
@@ -358,10 +425,13 @@ pub fn main() {
                 widget_rao_lao.set_value(0.0);
                 frame_rao_lao.set_label(&(angle).to_string());
                 gl_wind.redraw();
-            }
-
-            _ => println!(""),
-        }
+            },
+          //  None => (), 
+          _ => println!(""),
+           
+        }//match 
+        
+       
     } //while
 } //main
 
@@ -370,9 +440,40 @@ fn cb_quit() {
     std::process::exit(0x0100);
 } //cb_quit
   /***********************************************************/
+  /***************************************************************** */
+/*
+  fn draw_rca_scene(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
+    //setup_gl();
+    let segment_names = get_rca_segments_names_92();
+    let mut i = 0;
+    while i < segment_names.len() {
+        draw_segment_92(&segment_names[i], rotate_rao_lao, rotate_cr_ca);
+        i = i + 1;
+    } //while
+    draw_machine(rotate_rao_lao, rotate_cr_ca);
+    set_marker(rotate_rao_lao, rotate_cr_ca);
+    draw_frame();
+    /**************************************** */
+} //draw_scene
+/***************************************************************** */
 
+fn draw_left_scene(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
+    //setup_gl();
+    let segment_names = get_left_segments_names_92();
+    let mut i = 0;
+    while i < segment_names.len() {
+        draw_segment_92(&segment_names[i], rotate_rao_lao, rotate_cr_ca);
+        i = i + 1;
+    } //while
+    draw_machine(rotate_rao_lao, rotate_cr_ca);
+    set_marker(rotate_rao_lao, rotate_cr_ca);
+    draw_frame();
+    /**************************************** */
+} //draw_scene
+*/
+/***************************************************************** */
 fn draw_scene(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
-    setup_gl();
+   // setup_gl();
     let segment_names = get_segments_names_92();
     let mut i = 0;
     while i < segment_names.len() {
