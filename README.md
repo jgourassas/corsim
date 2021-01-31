@@ -1,7 +1,7 @@
 
 ## CORSIM Is a simple and naive  simulation of Coronary Angiographic Views and Angulations.
 
-### The porpuse of this software to show - Help students /  fellows-in-training to be used with coronary views
+### The purpose of this software to show - Help students /  fellows-in-training to be used with coronary views
 
 
 ### Notes
@@ -40,7 +40,7 @@
 
 - JACC: CARDIOVASCULAR INTERVENTIONS VOL. 13, NO. 21, 2020 NOVEMBER 9, 2020:2560070
 
-**Requirments:**
+**Requirements:**
 
 ***OpenGl, Rust, FLTK, fltk-rs***
 

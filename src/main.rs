@@ -1,5 +1,3 @@
-
-
 //First install https://github.com/burtonageo/cargo-bundle then run cargo bundle --release [target]
 //For your OS run bundle --release ( cargo bundle)
 // for Debian find executable in corsim/target/debug/bundle/deb/corsim_1.0.0_amd64/data/usr/bin/corsim
@@ -7,9 +5,9 @@
 
 #![allow(non_snake_case)]
 
+use fltk::dialog::message;
 use fltk::*;
 use fltk::{button::*, frame::*, valuator::*, window::*};
-use fltk::dialog::{message};
 /*
 use fltk::{
     app::{App, AppScheme, channel},
@@ -21,6 +19,7 @@ use fltk::{
     window::DoubleWindow,
 };
 */
+
 use glu_sys::*;
 
 use std::cell::RefCell;
@@ -31,7 +30,6 @@ use std::{error::Error, fmt, panic, thread, time};
 //use std::mem;
 //use std::os::raw::c_void;
 //use std::ffi::CStr;
-
 
 //use std::fmt;
 //use std::iter;
@@ -86,12 +84,17 @@ const OUTER_RADIOUS: f64 = 0.85;
 mod simcor_data_functions;
 
 use simcor_data_functions::{
-    get_diameter, get_midpoint_92, get_midpoint_color_92, get_optimal_views, get_segment_points_92,
-    get_segments_names_92, optimal_angles,
-   // get_rca_segments_names_92, get_left_segments_names_92, 
+    get_diameter,
+    get_midpoint_92,
+    get_midpoint_color_92,
+    get_optimal_views,
+    get_segment_points_92,
+    get_segments_names_92,
+    optimal_angles,
+    get_nomeclature, 
+    //get_nomeclature_data, 
+    // get_rca_segments_names_92, get_left_segments_names_92,
 };
-
-
 
 //const SIZE_UNIT: f32 = 2.0;
 /*
@@ -112,16 +115,21 @@ pub enum Message {
     Crca,
     AnteriorPosterior,
     RcaOnly,
-    LeftOnly
+    LeftOnly,
 }
 
-
+pub enum EventMessage {
+    PushEvent,
+}
 
 pub fn main() {
     //get_data_92();
     // get_branch_data_92();
-    panic::set_hook(Box::new(|panic_info| { message(200, 200, &panic_info.to_string());}));
-   
+    //get_nomeclature_data();
+    panic::set_hook(Box::new(|panic_info| {
+        message(200, 200, &panic_info.to_string());
+    }));
+
     let app = app::App::default().with_scheme(app::Scheme::Gtk);
     let mut fltk_wind = Window::new(
         100,
@@ -177,8 +185,13 @@ pub fn main() {
     widget_rao_lao.set_trigger(CallbackTrigger::Changed);
     let widget_rao_lao_c = widget_rao_lao.clone();
 
-    let mut frame_rao_lao =
-        Frame::new(FLTK_WINDOW_WIDTH - 60, FLTK_WINDOW_HEIGHT - 250, 70, 40, "");
+    let mut frame_rao_lao = Frame::new(
+        FLTK_WINDOW_WIDTH - 60,
+        FLTK_WINDOW_HEIGHT - 250,
+        70,
+        40,
+        "",
+    );
     frame_rao_lao.set_color(Color::from_rgb(39, 45, 206)); //blue
     frame_rao_lao.set_label_size(22);
 
@@ -246,9 +259,9 @@ pub fn main() {
         40,
         "Quit➤",
     );
-    but_quit.set_color(Color::from_rgb(251,180,174)); //red
+    but_quit.set_color(Color::from_rgb(251, 180, 174)); //red
     but_quit.set_label_size(18);
-                                                      // but_quit.set_color(Color::from_rgb(102,194,165)); //green
+    // but_quit.set_color(Color::from_rgb(102,194,165)); //green
     but_quit.set_callback(Box::new(move || cb_quit()));
 
     let mut but_ap_view = Button::new(
@@ -259,28 +272,28 @@ pub fn main() {
         "A-P View",
     );
 
-/*
-    let mut but_rca_only = Button::new(
-        FLTK_WINDOW_WIDTH - 220,
-        FLTK_WINDOW_HEIGHT - 450,
-        70,
-        40,
-        "RCA Only",
-    );
+    /*
+        let mut but_rca_only = Button::new(
+            FLTK_WINDOW_WIDTH - 220,
+            FLTK_WINDOW_HEIGHT - 450,
+            70,
+            40,
+            "RCA Only",
+        );
 
-    but_rca_only.set_color(Color::from_rgb(255,255,204)); //red
-    but_rca_only.set_label_size(14);
+        but_rca_only.set_color(Color::from_rgb(255,255,204)); //red
+        but_rca_only.set_label_size(14);
 
-    let mut but_left_only = Button::new(
-        FLTK_WINDOW_WIDTH - 100,
-        FLTK_WINDOW_HEIGHT - 450,
-        70,
-        40,
-        "Left Only",
-    );
-    but_left_only.set_color(Color::from_rgb(255,255,204)); 
-    but_left_only.set_label_size(14);
-*/
+        let mut but_left_only = Button::new(
+            FLTK_WINDOW_WIDTH - 100,
+            FLTK_WINDOW_HEIGHT - 450,
+            70,
+            40,
+            "Left Only",
+        );
+        but_left_only.set_color(Color::from_rgb(255,255,204));
+        but_left_only.set_label_size(14);
+    */
 
     //Frame -> FLTK BOX = X,Y W, H
     //  const FLTK_WINDOW_HEIGHT: i32 = 1200 - MARGIN_TOP - MARGIN_BOTTOM;
@@ -288,7 +301,7 @@ pub fn main() {
         FRAME_INFO_X,
         FRAME_INFO_Y,
         FRAME_INFO_WIDTH,
-        FRAME_INFO_HEIGHT -200,
+        FRAME_INFO_HEIGHT - 200,
         "Info View",
     );
     //  Frame::new(FLTK_WINDOW_WIDTH - 60, MARGIN_TOP - 150, FRAME_INFO_WIDTH , FRAME_INFO_HEIGHT, "Info View");
@@ -329,7 +342,9 @@ pub fn main() {
             let idx = col as usize;
             draw_header(&format!("{}", header[idx]), x, y, w, h);
         } // Column titles
-        table::TableContext::RowHeader => draw_header(&format!("{}", row + 1), x, y, w, h), // Row titles
+        table::TableContext::RowHeader => {
+            draw_header(&format!("{}", row + 1), x, y, w, h)
+        } // Row titles
         table::TableContext::Cell => {
             let max_col = 3;
 
@@ -349,12 +364,17 @@ pub fn main() {
         _ => (),
     }));
 
-    but_ap_view.set_color(Color::from_rgb(161,215,106)); //blue light
+    but_ap_view.set_color(Color::from_rgb(161, 215, 106)); //blue light
 
-    let mut gl_wind =
-        window::GlWindow::new(10, 10, GL_WINDOW_WIDTH, GL_WINDOW_HEIGHT, "GL WINDOW!");
-    
-     gl_wind.make_resizable(true);
+    let mut gl_wind = window::GlWindow::new(
+        10,
+        10,
+        GL_WINDOW_WIDTH,
+        GL_WINDOW_HEIGHT,
+        "GL WINDOW!",
+    );
+
+    gl_wind.make_resizable(true);
 
     let rao_lao = Rc::from(RefCell::from(0.0));
     let rao_lao_c = rao_lao.clone();
@@ -362,12 +382,11 @@ pub fn main() {
     let cr_ca = Rc::from(RefCell::from(0.0));
     let cr_ca_c = cr_ca.clone();
 
-
     gl_wind.draw(Box::new(move || {
         setup_gl();
         draw_scene(&rao_lao_c.borrow(), &cr_ca_c.borrow())
         //setup_gl();
-        //draw_rca_scene(&rao_lao_c.borrow(), &cr_ca_c.borrow()); 
+        //draw_rca_scene(&rao_lao_c.borrow(), &cr_ca_c.borrow());
         //draw_left_scene(&rao_lao_c.borrow(), &cr_ca_c.borrow());
     }));
 
@@ -379,8 +398,20 @@ pub fn main() {
     fltk_wind.show();
 
     let (s, r) = app::channel::<(Message, f32)>();
+    //let (s_event, r_event) =  app::channel::(Message, <(i32, i32)>)) ();
+    // let (s_event, r_event) = app::channel::< ( i32, i32 ) >();
+    let (s_event, r_event) = app::channel::<(i32, i32)>();
 
- 
+    gl_wind.handle(Box::new(move |ev| match ev {
+        Event::Push => {
+            s_event.send(app::event_coords());
+            //println!("coords: {:?} ",   app::event_coords() );
+            //present_segment_name(app::event_coords());
+            true
+        }
+        // _ => false,
+        _ => false,
+    }));
 
     widget_rao_lao.set_callback(Box::new(move || {
         let angle_rao_lao = widget_rao_lao_c.value() as f32;
@@ -399,8 +430,26 @@ pub fn main() {
         s.send(msg)
     }));
 
-   
+    /*
+    while app.wait(){
 
+        if let Some(msg) = r.recv{
+       match msg{
+
+       }//match msg
+
+        }//if r_recv
+ 
+        if let Some(msg) = r_event{
+           match msg{
+
+           }//match r_event
+
+        }//if msg = r_event
+        
+
+    }//while
+    */
     while app.wait().unwrap() {
         match r.recv() {
             Some((Message::Raolao, rao_angle)) => {
@@ -408,12 +457,12 @@ pub fn main() {
                 frame_rao_lao.set_label(&(rao_angle).to_string());
 
                 gl_wind.redraw();
-            },
+            }
             Some((Message::Crca, cr_angle)) => {
                 *cr_ca.borrow_mut() = cr_angle;
                 frame_cr_ca.set_label(&(cr_angle).to_string());
                 gl_wind.redraw();
-            },
+            }
 
             Some((Message::AnteriorPosterior, angle)) => {
                 *rao_lao.borrow_mut() = angle;
@@ -425,22 +474,135 @@ pub fn main() {
                 widget_rao_lao.set_value(0.0);
                 frame_rao_lao.set_label(&(angle).to_string());
                 gl_wind.redraw();
-            },
-          //  None => (), 
-          _ => println!(""),
-           
-        }//match 
-        
-       
+            }
+            //  None => (),
+            _ => println!(""),
+        } //match
+
+        /**********************************/
+        /************************************/
     } //while
 } //main
+  /****************************************** */
 
+/*
+In the past I've used glReadPixels( xf, yf, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &zf);
+to read the value of the depth buffer at a point (xf, yf) in screen space.
+You can then unproject this point back into world coordinates (multiply
+by the inverse of the modelview and projection matrices.
+
+This can be done with gluUnProject provided you're happy including the GLU library in your application.
+This gives you a coordinate, you then need to search through your objects to find one that has a bounding box
+that contains this coordinate. This object is the one selected.
+*/
+/*
+fn present_segment_name(coords: (i32, i32)) {
+    let mut x = coords.0;
+    let mut y = coords.1;
+    //GLbyte color[4];
+    unsafe {
+
+       // GLuint buff[64] = {0};
+
+	    GLint hits, view[4];
+
+        let id: i32;
+        glPushMatrix();
+        /*
+            This choose the buffer where store the values for the selection data
+        */
+
+        glSelectBuffer(64, buff);
+        /*
+            This retrieves info about the viewport
+        */
+        glGetIntegerv(GL_VIEWPORT, view);
+        /*
+            Switching in selecton mode
+        */
+        glRenderMode(GL_SELECT);
+/*
+		Clearing the names' stack
+		This stack contains all the info about the objects
+	*/
+      glInitNames();
+    
+      /*
+		Now fill the stack with one element (or glLoadName will generate an error)
+	*/
+    glPushName(0);
+    /*
+		Now modify the viewing volume, restricting selection area around the cursor
+	*/
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+		glLoadIdentity();
+
+		/*
+			restrict the draw to an area around the cursor
+		*/
+		gluPickMatrix(x, y, 1.0, 1.0, view);
+		gluPerspective(60, 1.0, 0.0001, 1000.0);
+
+		/*
+			Draw the objects onto the screen
+		*/
+		glMatrixMode(GL_MODELVIEW);
+		
+		/*
+			draw only the names in the stack, and fill the array
+		*/
+        //gl_draw();
+        
+
+		/*
+			Do you remeber? We do pushMatrix in PROJECTION mode
+		*/
+		glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+
+	/*
+		get number of objects drawed in that area
+		and return to render mode
+	*/
+	let hits = glRenderMode(GL_RENDER);
+
+	/*
+		Print a list of the objects
+	*/
+//	list_hits(hits, buff);
+
+	/*
+		uncomment this to show the whole buffer
+	* /
+	gl_selall(hits, buff);
+	*/
+
+	glMatrixMode(GL_MODELVIEW);
+      
+      
+      
+      
+      
+      
+      
+      glPopMatrix();
+
+        
+          
+    } //unsafe
+} //present_segment_name
+*/
+/******************************************** */
 fn cb_quit() {
+    //let nomeclature = get_nomeclature("LAD");
+    // println!("nomeclature:{:?} ", nomeclature);
+
     println!("Enjoy. Quiting. Tnx ");
     std::process::exit(0x0100);
 } //cb_quit
   /***********************************************************/
-  /***************************************************************** */
+/***************************************************************** */
 /*
   fn draw_rca_scene(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
     //setup_gl();
@@ -473,7 +635,7 @@ fn draw_left_scene(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
 */
 /***************************************************************** */
 fn draw_scene(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
-   // setup_gl();
+    // setup_gl();
     let segment_names = get_segments_names_92();
     let mut i = 0;
     while i < segment_names.len() {
@@ -489,7 +651,7 @@ fn draw_scene(rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
 fn setup_gl() {
     unsafe {
         glClearColor(0.0, 0.0, 0.0, 0.0);
-       // glClearColor(64.0/255.0, 64.0/255.0, 64.0/255.0, 1.0);
+        // glClearColor(64.0/255.0, 64.0/255.0, 64.0/255.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -500,22 +662,25 @@ fn setup_gl() {
         // Disable backface culling to render both sides of polygons
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         //glEnable(GL_POINT_SMOOTH);
-     
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_MULTISAMPLE);
     } //usafe
 }
-
-fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32) {
+/************************************************** */
+fn draw_segment_92(
+    segment_name: &str,
+    rotate_rao_lao: &f32,
+    rotate_cr_ca: &f32,
+) {
     let point_names = get_segment_points_92(segment_name);
 
     let mut points = vec![];
     let mut diameters_vec = vec![];
     let mut midpoint_names_vec = vec![];
-
 
     let mut i = 0;
     unsafe {
@@ -532,7 +697,7 @@ fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32)
         while i < point_names.len() {
             let midpoint = get_midpoint_92(&point_names[i]);
             let color_vec: Vec<u8> = get_midpoint_color_92(point_names[i]);
-            
+
             let diameter: f32 = get_diameter(point_names[i]);
             diameters_vec.push(diameter);
 
@@ -545,12 +710,12 @@ fn draw_segment_92(segment_name: &str, rotate_rao_lao: &f32, rotate_cr_ca: &f32)
             midpoint_names_vec.push(point_names[i]);
             // draw_as_bezier_segment(&points, &color_vec, &diameters_vec, point_names[i]);
 
-            draw_as_polyline_segment(&points, 
-                &color_vec, 
-                &diameters_vec, 
-                &midpoint_names_vec);
-
-
+            draw_as_polyline_segment(
+                &points,
+                &color_vec,
+                &diameters_vec,
+                &midpoint_names_vec,
+            );
 
             i = i + 1;
         } //while
@@ -601,94 +766,86 @@ glPopMatrix();
 } //draw_segment
 */
 
-
 fn draw_as_polyline_segment(
     points: &[Point3<f32>],
     color: &Vec<u8>,
     diameters: &Vec<f32>,
     midpoint_names: &Vec<&str>,
 ) {
-    
-
     let polyline = Polyline::new(points.to_vec(), None);
 
     unsafe {
+        /****************************************** */
 
-/****************************************** */
+        /*************START DRAW POLYLINE****************************************** */
+        //let qobj = gluNewQuadric();
+        glPushMatrix(); //start 1
+                        /************START TEST LIGHT****************************** */
+        /*
+            //Red rubber
+            let  mat_ambient =  [0.05,0.0,0.0,1.0 ];
+            let  mat_diffuse =  [0.5,0.4,0.4,1.0 ];
+            let  mat_specular = [0.7,0.04,0.04,1.0];
+            let  light_position = [1.0,1.0,1.0,0.0];
 
+            glMaterialfv(GL_FRONT,GL_AMBIENT, mat_ambient.as_ptr());
+            glMaterialfv(GL_FRONT,GL_DIFFUSE, mat_diffuse.as_ptr());
+            glMaterialfv(GL_FRONT,GL_SPECULAR,mat_specular.as_ptr());
+            glLightfv(GL_LIGHT0, GL_POSITION,light_position.as_ptr());
 
-       
-/*************STAR DRAW POLYLINE****************************************** */
-//let qobj = gluNewQuadric();
-glPushMatrix();//start 1
-    /************START TEST LIGHT****************************** */
-/*
-    //Red rubber
-    let  mat_ambient =  [0.05,0.0,0.0,1.0 ];
-    let  mat_diffuse =  [0.5,0.4,0.4,1.0 ];
-    let  mat_specular = [0.7,0.04,0.04,1.0];
-    let  light_position = [1.0,1.0,1.0,0.0];
+            glMaterialf(GL_FRONT,GL_SHININESS, 10.0);
 
-    glMaterialfv(GL_FRONT,GL_AMBIENT, mat_ambient.as_ptr());
-    glMaterialfv(GL_FRONT,GL_DIFFUSE, mat_diffuse.as_ptr());
-    glMaterialfv(GL_FRONT,GL_SPECULAR,mat_specular.as_ptr());
-    glLightfv(GL_LIGHT0, GL_POSITION,light_position.as_ptr());
-    
-    glMaterialf(GL_FRONT,GL_SHININESS, 10.0);
-   
-    glColorMaterial(GL_FRONT,GL_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_NORMALIZE);
-   // glFrontFace(GL_CW);
-*/
+            glColorMaterial(GL_FRONT,GL_DIFFUSE);
+            glEnable(GL_COLOR_MATERIAL);
+            glEnable(GL_LIGHTING);
+            glEnable(GL_LIGHT0);
+            glEnable(GL_NORMALIZE);
+           // glFrontFace(GL_CW);
+        */
 
-    /************END START LIGHT**********************************/
+        /************END START LIGHT**********************************/
         glColor3ub(color[0], color[1], color[2]);
         let mut j = 0;
 
-        while j <  polyline.points().len() {
-       
-       glPushMatrix();//start 2
-            glLineWidth(diameters[j] * SIZE_UNIT * 0.7 );
-    /******************************/
-      
-    /************************************* */
-      //  glBegin(GL_POINTS);
-       glBegin(GL_LINE_STRIP);  
-        glVertex3f(
-              polyline.points()[j][0],
-              polyline.points()[j][1],
-              polyline.points()[j][2],
+        while j < polyline.points().len() {
+            glPushMatrix(); //start 2
+            glLineWidth(diameters[j] * SIZE_UNIT * 0.7);
+            /******************************/
+
+            /************************************* */
+            //  glBegin(GL_POINTS);
+            glBegin(GL_LINE_STRIP);
+            glVertex3f(
+                polyline.points()[j][0],
+                polyline.points()[j][1],
+                polyline.points()[j][2],
             );
-             j = j + 1;
+            j = j + 1;
         }
-        
+
         glEnd();
         //glFlush();
 
-        glPopMatrix();//end 2
+        glPopMatrix(); //end 2
 
-      //  glDisable(GL_LIGHTING);
-        glPopMatrix();//end 1
+        //  glDisable(GL_LIGHTING);
+        glPopMatrix(); //end 1
 
-/*************END DRAW POLYLINE****************************************** */
+        /*************END DRAW POLYLINE****************************************** */
 
-/***************START DRAW POINTS***************************** */
-        glPushMatrix();//STARTT 1
-        
+        /***************START DRAW POINTS***************************** */
+        glPushMatrix(); //STARTT 1
+
         glColor3ub(color[0], color[1], color[2]);
-        
+
         let mut k = 0;
 
-         while k < polyline.points().len() {
+        while k < polyline.points().len() {
+            glPushMatrix(); //START 2
 
-         glPushMatrix();//START 2  
-
-         glPointSize(diameters[k] * SIZE_UNIT * 0.5 );
-         glBegin(GL_POINTS );
-             glVertex3f(
+            glPointSize(diameters[k] * SIZE_UNIT * 0.5);
+            glBegin(GL_POINTS);
+            glVertex3f(
                 polyline.points()[k][0],
                 polyline.points()[k][1],
                 polyline.points()[k][2],
@@ -696,23 +853,21 @@ glPushMatrix();//start 1
 
             k = k + 1;
         }
-        
+
         glEnd();
 
         //glRasterPos2f(-3.0, -2.0);
         //glFlush();
 
-       glPopMatrix();//END 2 
+        glPopMatrix(); //END 2
 
+        glPopMatrix(); //END 1
 
-       glPopMatrix();//END 1 
-
-/***************END DRAW POINTS***************************** */
-
+        /***************END DRAW POINTS***************************** */
     } //unsafe
 } //draw_segment
-/////
-/***********************************************************/
+  /////
+  /***********************************************************/
 /*
 fn draw_as_polyline_segment_1(
     points: &[Point3<f32>],
@@ -1175,7 +1330,16 @@ fn draw_spine(rao_lao: &f32) {
 
         /****************************************** */
     } //unsafe
-/**************************************************** */
+      /**************************************************** */
 
-/**********************************************************/
+    test_implicit();
+
+    /**********************************************************/
 } //draw_spine
+
+fn test_implicit() {
+    unsafe {
+        glPushMatrix();
+        glPopMatrix();
+    }
+}

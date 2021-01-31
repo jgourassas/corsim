@@ -51,7 +51,6 @@ pub fn get_left_segments_names_92() -> Vec<String> {
 
 /*************************************************************/
 
-
 pub fn get_segments_names_92() -> Vec<String> {
     let segment_names: Vec<String> = vec![
         "LM".to_string(),
@@ -360,8 +359,6 @@ pub fn get_midpoint_92(point_name: &str) -> Vec<f32> {
         vec![4.632501989794268, -5.358438019581681, 0.48689557900405106],
     );
 
-      
-    
     points.insert(
         String::from("OPo"),
         vec![3.3604513207724396, -2.6479861018690127, -1.027393072308413],
@@ -498,7 +495,6 @@ pub fn get_midpoint_92(point_name: &str) -> Vec<f32> {
 }
 /**************************************************** */
 
-
 /***********************************************************************8 */
 pub fn get_segment_points_92(segment_name: &str) -> Vec<&str> {
     let mut segments = HashMap::new();
@@ -512,9 +508,9 @@ pub fn get_segment_points_92(segment_name: &str) -> Vec<&str> {
     segments.insert(String::from("C2"), vec!["C1d", "C2p", "C2m", "C2d"]);
     segments.insert(String::from("C3"), vec!["C2d", "C3p", "C3m", "C3d"]);
     segments.insert(String::from("C4"), vec!["C3d", "C4p", "C4m", "C4d"]);
-   /*
+    /*
     segments.insert(String::from("R1"), vec!["R1p", "R1m", "R1d",
-    "R1d", "R2p", "R2m", "R2d", 
+    "R1d", "R2p", "R2m", "R2d",
     "R2d", "R3p", "R3m", "R3d",
     "R3d", "R4p", "R4m", "R4d",
     "R3d", "RDo", "RDp", "RDm"
@@ -557,7 +553,7 @@ pub fn get_segment_points_92(segment_name: &str) -> Vec<&str> {
                present in right, small-right, and balanced-dominant anatomy
 
     */
-      segments.insert(String::from("RD"), vec!["R3d", "RDo", "RDp", "RDm"]);
+    segments.insert(String::from("RD"), vec!["R3d", "RDo", "RDp", "RDm"]);
     /*
     RI Inferior Inferior wall branch arises from R4, present only in right and
                   small-right-dominant anatomy
@@ -578,136 +574,137 @@ pub fn get_segment_points_92(segment_name: &str) -> Vec<&str> {
     } else {
         vec!["R", "R", "R"]
     }
-}
+}//
+
 
 //The parameters to glColor3f have to be floating point values in the range [0.0, 1.0],
 //compare to glColor3ub, where the parameters are integral values in the range [0, 255].
 //['rgb(215,25,28)','rgb(253,174,97)','rgb(166,217,106)','rgb(26,150,65)']
 pub fn get_midpoint_color_92(point_name: &str) -> Vec<u8> {
     let mut colors = HashMap::new();
-    colors.insert(String::from("LMp"), vec![215,25,28]);
-    colors.insert(String::from("LMm"), vec![215,25,28]);
-    colors.insert(String::from("LMd"), vec![215,25,28]);
+    colors.insert(String::from("LMp"), vec![215, 25, 28]);
+    colors.insert(String::from("LMm"), vec![215, 25, 28]);
+    colors.insert(String::from("LMd"), vec![215, 25, 28]);
 
-    colors.insert(String::from("L1p"), vec![253,174,97]);
-    colors.insert(String::from("L1m"), vec![253,174,97]);
-    colors.insert(String::from("L1d"), vec![253,174,97]);
+    colors.insert(String::from("L1p"), vec![253, 174, 97]);
+    colors.insert(String::from("L1m"), vec![253, 174, 97]);
+    colors.insert(String::from("L1d"), vec![253, 174, 97]);
 
-    colors.insert(String::from("L2p"), vec![253,174,97]);
-    colors.insert(String::from("L2m"), vec![253,174,97]);
-    colors.insert(String::from("L2d"), vec![253,174,97]);
+    colors.insert(String::from("L2p"), vec![253, 174, 97]);
+    colors.insert(String::from("L2m"), vec![253, 174, 97]);
+    colors.insert(String::from("L2d"), vec![253, 174, 97]);
 
-    colors.insert(String::from("L3p"), vec![253,174,97]);
-    colors.insert(String::from("L3m"), vec![253,174,97]);
-    colors.insert(String::from("L3d"), vec![253,174,97]);
+    colors.insert(String::from("L3p"), vec![253, 174, 97]);
+    colors.insert(String::from("L3m"), vec![253, 174, 97]);
+    colors.insert(String::from("L3d"), vec![253, 174, 97]);
 
-    colors.insert(String::from("L4p"), vec![253,174,97]);
-    colors.insert(String::from("L4m"), vec![253,174,97]);
+    colors.insert(String::from("L4p"), vec![253, 174, 97]);
+    colors.insert(String::from("L4m"), vec![253, 174, 97]);
 
     //colors.insert(String::from("L4d"), vec![253,174,97]);
 
-    colors.insert(String::from("L4d"), vec![240,59,32]);
-    colors.insert(String::from("C1p"), vec![171,221,164]);
-    colors.insert(String::from("C1m"), vec![171,221,164]);
-    colors.insert(String::from("C1d"), vec![171,221,164]);
+    colors.insert(String::from("L4d"), vec![240, 59, 32]);
+    colors.insert(String::from("C1p"), vec![171, 221, 164]);
+    colors.insert(String::from("C1m"), vec![171, 221, 164]);
+    colors.insert(String::from("C1d"), vec![171, 221, 164]);
 
-    colors.insert(String::from("C2p"), vec![171,221,164]);
-    colors.insert(String::from("C2m"), vec![171,221,164]);
-    colors.insert(String::from("C2d"), vec![171,221,164]);
+    colors.insert(String::from("C2p"), vec![171, 221, 164]);
+    colors.insert(String::from("C2m"), vec![171, 221, 164]);
+    colors.insert(String::from("C2d"), vec![171, 221, 164]);
 
-    colors.insert(String::from("C3p"), vec![171,221,164]);
-    colors.insert(String::from("C3m"), vec![171,221,164]);
-    colors.insert(String::from("C3d"), vec![171,221,164]);
+    colors.insert(String::from("C3p"), vec![171, 221, 164]);
+    colors.insert(String::from("C3m"), vec![171, 221, 164]);
+    colors.insert(String::from("C3d"), vec![171, 221, 164]);
 
-    colors.insert(String::from("C4p"), vec![171,221,164]);
-    colors.insert(String::from("C4m"), vec![171,221,164]);
-    colors.insert(String::from("C4d"), vec![171,221,164]);
+    colors.insert(String::from("C4p"), vec![171, 221, 164]);
+    colors.insert(String::from("C4m"), vec![171, 221, 164]);
+    colors.insert(String::from("C4d"), vec![171, 221, 164]);
 
-    colors.insert(String::from("R1p"), vec![171,217,233]);
-    colors.insert(String::from("R1m"), vec![171,217,233]);
-    colors.insert(String::from("R1d"), vec![171,217,233]);
+    colors.insert(String::from("R1p"), vec![171, 217, 233]);
+    colors.insert(String::from("R1m"), vec![171, 217, 233]);
+    colors.insert(String::from("R1d"), vec![171, 217, 233]);
 
-    colors.insert(String::from("R2p"), vec![171,217,233]);
-    colors.insert(String::from("R2m"), vec![171,217,233]);
-    colors.insert(String::from("R2d"), vec![171,217,233]);
+    colors.insert(String::from("R2p"), vec![171, 217, 233]);
+    colors.insert(String::from("R2m"), vec![171, 217, 233]);
+    colors.insert(String::from("R2d"), vec![171, 217, 233]);
 
-    colors.insert(String::from("R3p"), vec![171,217,233]);
-    colors.insert(String::from("R3m"), vec![171,217,233]);
-    colors.insert(String::from("R3d"), vec![171,217,233]);
+    colors.insert(String::from("R3p"), vec![171, 217, 233]);
+    colors.insert(String::from("R3m"), vec![171, 217, 233]);
+    colors.insert(String::from("R3d"), vec![171, 217, 233]);
 
-    colors.insert(String::from("R4p"), vec![171,217,233]);
-    colors.insert(String::from("R4m"), vec![171,217,233]);
-    colors.insert(String::from("R4d"), vec![171,217,233]);
+    colors.insert(String::from("R4p"), vec![171, 217, 233]);
+    colors.insert(String::from("R4m"), vec![171, 217, 233]);
+    colors.insert(String::from("R4d"), vec![171, 217, 233]);
 
-    colors.insert(String::from("S1p"), vec![253,174,97]);
-    colors.insert(String::from("S1m"), vec![253,174,97]);
-    colors.insert(String::from("S1d"), vec![253,174,97]);
+    colors.insert(String::from("S1p"), vec![253, 174, 97]);
+    colors.insert(String::from("S1m"), vec![253, 174, 97]);
+    colors.insert(String::from("S1d"), vec![253, 174, 97]);
 
-    colors.insert(String::from("S2p"), vec![253,174,97]);
-    colors.insert(String::from("S2m"), vec![253,174,97]);
-    colors.insert(String::from("S2d"), vec![253,174,97]);
+    colors.insert(String::from("S2p"), vec![253, 174, 97]);
+    colors.insert(String::from("S2m"), vec![253, 174, 97]);
+    colors.insert(String::from("S2d"), vec![253, 174, 97]);
 
-    colors.insert(String::from("S3p"), vec![253,174,97]);
-    colors.insert(String::from("S3m"), vec![253,174,97]);
-    colors.insert(String::from("S3d"), vec![253,174,97]);
+    colors.insert(String::from("S3p"), vec![253, 174, 97]);
+    colors.insert(String::from("S3m"), vec![253, 174, 97]);
+    colors.insert(String::from("S3d"), vec![253, 174, 97]);
 
-    colors.insert(String::from("D1p"), vec![253,174,97]);
-    colors.insert(String::from("D1m"), vec![253,174,97]);
-    colors.insert(String::from("D1d"), vec![253,174,97]);
+    colors.insert(String::from("D1p"), vec![253, 174, 97]);
+    colors.insert(String::from("D1m"), vec![253, 174, 97]);
+    colors.insert(String::from("D1d"), vec![253, 174, 97]);
 
-    colors.insert(String::from("D2p"), vec![253,174,97]);
-    colors.insert(String::from("D2m"), vec![253,174,97]);
-    colors.insert(String::from("D2d"), vec![215,25,28]);
+    colors.insert(String::from("D2p"), vec![253, 174, 97]);
+    colors.insert(String::from("D2m"), vec![253, 174, 97]);
+    colors.insert(String::from("D2d"), vec![215, 25, 28]);
 
-    colors.insert(String::from("D3p"), vec![253,174,97]);
-    colors.insert(String::from("D3m"), vec![253,174,97]);
-    colors.insert(String::from("D3d"), vec![215,25,28]);
+    colors.insert(String::from("D3p"), vec![253, 174, 97]);
+    colors.insert(String::from("D3m"), vec![253, 174, 97]);
+    colors.insert(String::from("D3d"), vec![215, 25, 28]);
 
     colors.insert(String::from("MRp"), vec![203, 201, 226]);
     colors.insert(String::from("MRm"), vec![203, 201, 226]);
     colors.insert(String::from("MRd"), vec![203, 201, 226]);
 
-    colors.insert(String::from("OMp"), vec![171,221,164]);
-    colors.insert(String::from("OMm"), vec![171,221,164]);
-    colors.insert(String::from("OMd"), vec![171,221,164]);
+    colors.insert(String::from("OMp"), vec![171, 221, 164]);
+    colors.insert(String::from("OMm"), vec![171, 221, 164]);
+    colors.insert(String::from("OMd"), vec![171, 221, 164]);
 
     //    segments.insert(String::from("M3"), vec!["C3p", "M3o", "M3p", "M3m"]); //M3 MARGINAL FROM LCX
 
-    colors.insert(String::from("OAo"), vec![171,221,164]);
-    colors.insert(String::from("OAp"), vec![171,221,164]);
-    colors.insert(String::from("OAm"), vec![171,221,164]);
+    colors.insert(String::from("OAo"), vec![171, 221, 164]);
+    colors.insert(String::from("OAp"), vec![171, 221, 164]);
+    colors.insert(String::from("OAm"), vec![171, 221, 164]);
 
-    colors.insert(String::from("M1o"), vec![171,221,164]);
-    colors.insert(String::from("M1p"), vec![171,221,164]);
-    colors.insert(String::from("M1m"), vec![171,221,164]);
+    colors.insert(String::from("M1o"), vec![171, 221, 164]);
+    colors.insert(String::from("M1p"), vec![171, 221, 164]);
+    colors.insert(String::from("M1m"), vec![171, 221, 164]);
 
-    colors.insert(String::from("M2o"), vec![171,221,164]);
-    colors.insert(String::from("M2p"), vec![171,221,164]);
-    colors.insert(String::from("M2m"), vec![171,221,164]);
+    colors.insert(String::from("M2o"), vec![171, 221, 164]);
+    colors.insert(String::from("M2p"), vec![171, 221, 164]);
+    colors.insert(String::from("M2m"), vec![171, 221, 164]);
 
-    colors.insert(String::from("M3o"), vec![171,221,164]);
-    colors.insert(String::from("M3p"), vec![171,221,164]);
-    colors.insert(String::from("M3m"), vec![171,221,164]);
+    colors.insert(String::from("M3o"), vec![171, 221, 164]);
+    colors.insert(String::from("M3p"), vec![171, 221, 164]);
+    colors.insert(String::from("M3m"), vec![171, 221, 164]);
 
-    colors.insert(String::from("CPp"), vec![171,221,164 ]);
-    colors.insert(String::from("CPm"), vec![171,221,164 ]);
-    colors.insert(String::from("CPd"), vec![171,221,164 ]);
+    colors.insert(String::from("CPp"), vec![171, 221, 164]);
+    colors.insert(String::from("CPm"), vec![171, 221, 164]);
+    colors.insert(String::from("CPd"), vec![171, 221, 164]);
 
-    colors.insert(String::from("CIo"), vec![171,221,164 ]);
-    colors.insert(String::from("CIp"), vec![171,221,164 ]);
-    colors.insert(String::from("CIm"), vec![171,221,164  ]);
+    colors.insert(String::from("CIo"), vec![171, 221, 164]);
+    colors.insert(String::from("CIp"), vec![171, 221, 164]);
+    colors.insert(String::from("CIm"), vec![171, 221, 164]);
 
-    colors.insert(String::from("RDo"), vec![171,217,233 ]);
-    colors.insert(String::from("RDp"), vec![171,217,233 ]);
-    colors.insert(String::from("RDm"), vec![171,217,233 ]);
+    colors.insert(String::from("RDo"), vec![171, 217, 233]);
+    colors.insert(String::from("RDp"), vec![171, 217, 233]);
+    colors.insert(String::from("RDm"), vec![171, 217, 233]);
 
-   colors.insert(String::from("RIo"), vec![171,217,233]);
-    colors.insert(String::from("RIp"), vec![171,217,233]);
-    colors.insert(String::from("RIm"), vec![171,217,233]);
+    colors.insert(String::from("RIo"), vec![171, 217, 233]);
+    colors.insert(String::from("RIp"), vec![171, 217, 233]);
+    colors.insert(String::from("RIm"), vec![171, 217, 233]);
 
-    colors.insert(String::from("RPo"), vec![171,217,233]);
-    colors.insert(String::from("RPp"), vec![171,217,233]);
-    colors.insert(String::from("RPm"), vec![171,217,233]);
+    colors.insert(String::from("RPo"), vec![171, 217, 233]);
+    colors.insert(String::from("RPp"), vec![171, 217, 233]);
+    colors.insert(String::from("RPm"), vec![171, 217, 233]);
 
     let point = point_name.trim().to_string();
     let color = colors.get(&point);
@@ -715,7 +712,7 @@ pub fn get_midpoint_color_92(point_name: &str) -> Vec<u8> {
     if let Some(color) = color {
         color.to_vec()
     } else {
-        vec![26,150,65]
+        vec![26, 150, 65]
     }
     /*
         let point = point_name.trim().to_string();
@@ -782,7 +779,7 @@ pub fn get_diameter(point_name: &str) -> f32 {
 
     diameters.insert(String::from("R4p"), 2.4);
     diameters.insert(String::from("R4m"), 2.2);
-    diameters.insert(String::from("R4d"), 1.9);//jgour
+    diameters.insert(String::from("R4d"), 1.9); //jgour
 
     diameters.insert(String::from("S1o"), 1.8);
     diameters.insert(String::from("S1p"), 1.8);
@@ -827,8 +824,8 @@ pub fn get_diameter(point_name: &str) -> f32 {
     diameters.insert(String::from("CPp"), 2.1);
     diameters.insert(String::from("CPm"), 1.7);
     diameters.insert(String::from("CPo"), 2.6);
-    diameters.insert(String::from("CIo"), 1.2);//I have changed it was 0.0
-    diameters.insert(String::from("CIp"), 1.1);//changed
+    diameters.insert(String::from("CIo"), 1.2); //I have changed it was 0.0
+    diameters.insert(String::from("CIp"), 1.1); //changed
     diameters.insert(String::from("CIm"), 1.1);
     diameters.insert(String::from("CDo"), 3.2);
     diameters.insert(String::from("CDp"), 3.1);
@@ -854,37 +851,35 @@ pub fn get_diameter(point_name: &str) -> f32 {
 
     // *diameter.unwrap()
 } //get_diameter
-/***************************************************/
+  /***************************************************/
 //this is the data for optimal view table
 //vec[0] to vec[1] is the range of angle in rao_lao
 //vec[2] to vec[3] is the range of angles in cranial cauda;
 /*****************************************************/
-pub fn optimal_angles() -> HashMap<String, Vec<f32> > {
+pub fn optimal_angles() -> HashMap<String, Vec<f32>> {
     let mut angles = HashMap::new();
-    angles.insert(String::from("LMp"), vec![-10.0, -5.0, 35.0, 45.0 ]);
-    angles.insert(String::from("LMm"), vec![1.0, 5.0, 33.0, 43.0 ]);
-    angles.insert(String::from("LMd"), vec![40.0, 50.0, -40.0, -25.0 ]);
-    angles.insert(String::from("L1p"), vec![-45.0, -30.0, -40.0, -30.0 ]);
-    angles.insert(String::from("L2m"), vec![-10.0, -5.0, 35.0, 45.0 ]);
-    angles.insert(String::from("L3m"), vec![-10.0, -5.0, 35.0, 45.0  ]);
+    angles.insert(String::from("LMp"), vec![-10.0, -5.0, 35.0, 45.0]);
+    angles.insert(String::from("LMm"), vec![1.0, 5.0, 33.0, 43.0]);
+    angles.insert(String::from("LMd"), vec![40.0, 50.0, -40.0, -25.0]);
+    angles.insert(String::from("L1p"), vec![-45.0, -30.0, -40.0, -30.0]);
+    angles.insert(String::from("L2m"), vec![-10.0, -5.0, 35.0, 45.0]);
+    angles.insert(String::from("L3m"), vec![-10.0, -5.0, 35.0, 45.0]);
     //"Rao(5-10), Cra(35-45)",
-    angles.insert(String::from("D1o"), vec![-27.0, -1.0, 66.0, 87.0 ]);
-    angles.insert(String::from("C1p"), vec![-30.0, -45.0, -40.0, -30.0 ]);
-   // "Lcx Dist",
-   // "Rao(5-10), Cra(35-45) ",
-    angles.insert(String::from("C3p"), vec![-10.0, -5.0, 35.0, 45.0 ]);
-    angles.insert(String::from("OMp"), vec![-33.0, -15.0, -41.0, -25.0 ]);
-    angles.insert(String::from("R1p"), vec![74.0, 84.0, 37.0, 45.0 ]);
-  
-    angles.insert(String::from("R2p"), vec![-45.0, -35.0, -10.0, -1.0 ]);
- 
-    angles.insert(String::from("R4d"), vec![35.0, 52.0, 27.0, 41.0 ]);
-    angles.insert(String::from("RIm"), vec![-10.0, -5.0, 35.0, 45.0 ]);
-    
+    angles.insert(String::from("D1o"), vec![-27.0, -1.0, 66.0, 87.0]);
+    angles.insert(String::from("C1p"), vec![-30.0, -45.0, -40.0, -30.0]);
+    // "Lcx Dist",
+    // "Rao(5-10), Cra(35-45) ",
+    angles.insert(String::from("C3p"), vec![-10.0, -5.0, 35.0, 45.0]);
+    angles.insert(String::from("OMp"), vec![-33.0, -15.0, -41.0, -25.0]);
+    angles.insert(String::from("R1p"), vec![74.0, 84.0, 37.0, 45.0]);
+
+    angles.insert(String::from("R2p"), vec![-45.0, -35.0, -10.0, -1.0]);
+
+    angles.insert(String::from("R4d"), vec![35.0, 52.0, 27.0, 41.0]);
+    angles.insert(String::from("RIm"), vec![-10.0, -5.0, 35.0, 45.0]);
+
     angles
-
-
-}//optimal_angles
+} //optimal_angles
 
 /***************************************************/
 pub fn get_optimal_views() -> [&'static str; 42] {
@@ -935,8 +930,98 @@ pub fn get_optimal_views() -> [&'static str; 42] {
 
     data
 } //get_optimal_views
+/************************************************ */
+pub fn get_nomeclature(segment_name: &str) -> Vec<&str>  {
+
+let mut names = HashMap::new();
+names.insert(String::from("LAD"), vec!["Left anterior descending", "Left anterior"] );
+names.insert(String::from("LCA"),vec!["Left coronary artery","Left Coronary Artery"] );
+names.insert(String::from("LAD"), vec!["Left anterior descending", "Left anterior"]);
+names.insert(String::from("LCA"), vec!["Left coronary artery", "Left Coronary Artery"]);
+names.insert(String::from("LCx"), vec!["Left circumflex", "Left Circ"]);
+names.insert(String::from("LM"), vec!["Left main", "Left Main"]);
+names.insert(String::from("RCA"), vec!["Right coronary artery", "Righ Coronary Artery"]);
+names.insert(String::from("C1"), vec!["LCx first segment", "LCx from its origin at the LM to Mi (or OM, if Ml is absent)"]);
+names.insert(String::from("C2"), vec!["LCx second segment", "LCx from Ml to M2 (or OM) (not present if Ml is absent)"]);
+names.insert(String::from("C3"), vec!["LCx third segment", "LCx from M2 (or OM) to CP (if present, otherwise to end of LCx)"]);
+names.insert(String::from("C4"), vec!["LCx fourth segment", "LCx from CP along atrioventricular groove to end of LCx (absent in RCA and small-RCA-dominant distributions)"]);
+names.insert(String::from("L1"), vec!["LAD first segment", "LAD from its origin at the LM to S1"]);
+names.insert(String::from("L2"), vec!["LAD second segment", "LAD from Si to S3"]);
+names.insert(String::from("L3"), vec!["LAD third segment", "LAD from S3 to the cardiac apex"]);
+names.insert(String::from("L4"), vec!["LAD fourth segment", "LAD from the cardiac apex to its terminal point on the inferior wall"]);
+names.insert(String::from("LM"), vec!["Left main", "LCA from ostium to bifurcation of LCA into LAD and LCx"]);
+names.insert(String::from("R1"), vec!["RCA first segment", "RCA from its origin to Al"]);
+names.insert(String::from("R2"), vec!["RCA second segment", "RCA from Al to A3"]);
+names.insert(String::from("R3"), vec!["RCA third segment", "RCA from A3 to RD (if present, otherwise to end of RCA)"]);
+names.insert(String::from("R4"), vec!["RCA fourth segment", "RCA from the RD along atrioventricular groove to end of RCA (absent in balanced and LCA-dominant distributions)"]);
+names.insert(String::from("A1"), vec!["First Acute marginal RCA", "First largest branch arising from the RCA to supply the right ventricular wall"]);
+names.insert(String::from("A2"), vec!["Second  Acute marginal RCA", "Second branch arising from the RCA to supply the right ventricular wall"]);
+names.insert(String::from("A3"), vec!["Third  Acute marginal RCA", "Third  branch arising from the RCA to supply the right ventricular wall"]);
+names.insert(String::from("CD"), vec!["Posterior descending Lcx", "Distal most inferior wall branch arises from C4 present only in left-dominant anatomy"]);
+names.insert(String::from("CI"), vec!["Inferior Lcx", "Inferior wall branch arises from C4 present only in balanced and left-dominant anatomy\""]);
+names.insert(String::from("CP"), vec!["Posterior Lcx", "Proximal most inferior wall branch arises from junction of C3 and C4 present in small-right balanced and left-dominant anatomy"]);
+names.insert(String::from("D1"), vec!["Fist Diagonal", "First largest branch arising from the LAD to supply the left ventricular anterior free wall"]);
+names.insert(String::from("D2"), vec!["Second Diagonal", "Second largest branch arising from the LAD to supply the left ventricular anterior free wall"]);
+names.insert(String::from("D3"), vec!["Third Diagonal", "Third largest branch arising from the LAD to supply the left ventricular anterior free wall"]);
+names.insert(String::from("M1"), vec!["First Marginal Lcx", "First largest branch arising from the LCx to supply the left ventricular lateral free wall"]);
+names.insert(String::from("M2"), vec!["Second Marginal Lcx", "Second largest branch arising from the LCx to supply the left ventricular lateral free wall"]);
+names.insert(String::from("M3"), vec!["Third Marginal Lcx", "Third largest branch arising from the LCx to supply the left ventricular lateral free wall"]);
+names.insert(String::from("MR"), vec!["Median ramus", "Ramus Medianus: An anatomic variant arising at a trifurcation of the LM"]);
+names.insert(String::from("OA"), vec!["Anterior branch OM", "Anterior distal branch of OM"]);
+names.insert(String::from("OM"), vec!["Obtuse marginal", "Anatomic variant present when one branch artery off the LCx is much larger than its neighbors supplying the left ventricular lateral free wall"]);
+names.insert(String::from("OP"), vec!["Posterior branch OM", "Posterior distal branch of Obtuse Marginal"]);
+names.insert(String::from("RD"), vec!["Posterior descending RCA", "Proximal most inferior wall branch arises from junction of R3 and R4, present in right  small-right, and balanced-dominant anatomy"]);
+names.insert(String::from("RI"), vec!["Inferior RCA", "Inferior wall branch arises from R4 present only in right and small-right-dominant anatomy"]);
+names.insert(String::from("RP"), vec!["Posterior RCA", "Distal most inferior wall branch arises from R4 present only in right-dominant anatomy"]);
+names.insert(String::from("S1"), vec!["First Septal", "First Septal arising from the LAD to supply the interventricular septal wall,"]);
+names.insert(String::from("S2"), vec!["Second Septal", "Second Septal arising from the LAD to supply the interventricular septal wall,"]);
+names.insert(String::from("S3"), vec!["Third Septal", "Third Septal arising from the LAD to supply the interventricular septal wall,"]);
 
 
+
+let segment = segment_name.trim().to_string();
+let a_definition = names.get(&segment);
+
+if let Some(a_definition) = a_definition {
+    a_definition.to_vec()
+} else {
+    vec!["None", "None"]
+}
+//let dummy = vec!["D1", "D2"];
+//dummy
+
+
+
+}//nomeclature
+
+
+/*
+
+pub fn get_nomeclature_data() {
+    let mut reader = csv::ReaderBuilder::new()
+        .has_headers(true)
+        .from_path("data/nomeclature.csv")
+        .expect("Cannot read field");
+
+    for result in reader.records() {
+        let record = result.unwrap();
+        let main_artery: String = record[0].trim().to_string();
+        let name: String = record[1].trim().to_string();
+        let description: String = record[2].trim().to_string();
+
+       //names.insert(String::from("LCA"),vec!["Left coronary artery","Left Coronary Artery"] );
+       
+        println!("names.insert(String::from({:?}), vec![{:?}, {:?}]);", main_artery, name, description  );
+        //println!("{:?},{:?},{:?}", main_artery, name, description);
+
+
+        // println!("seg:{}, size:{},  point:{}", segment_name, size, point);
+       // angle2pos(segment_name, rho, theta, phi);
+    } //records
+      // println!("vessel_vec:{:?}", vessels_vec);
+      //println!("vessels_data{:?}", vessels_data);
+} //read data
+*/
 /*********************************************************** */
 /*
 fn get_data_92() {
