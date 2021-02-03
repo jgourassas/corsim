@@ -12,7 +12,7 @@
 
 - The Terminology of coronary segments is according the Dodge  Article. No attempt was made to translate to newer ones (AHA, CDISC - www.cdisc.org)
 
-
+- This repository  is an exercise does not contains quality code.
 
 
 <br/>
