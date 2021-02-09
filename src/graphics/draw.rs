@@ -21,12 +21,56 @@ pub use crate::graphics::data_gets::{
     optimal_angles,
     
 };
+const vertexShaderSource: &str = r#"
+    #version 330 core
+    layout (location = 0) in vec3 aPos;
+    void main() {
+       gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    }
+"#;
+
+const fragmentShaderSource: &str = r#"
+    #version 330 core
+    out vec4 FragColor;
+    void main() {
+       FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    }
+"#;
 
 
 const SIZE_UNIT: f32 = 2.5;
 const OUTER_RADIOUS: f64 = 0.85;
+pub fn setup_gl(){
+    unsafe{
+        glClearColor(0.0, 0.0, 0.0, 0.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
 
-pub fn setup_gl() {
+        glEnable(GL_DEPTH_TEST);    // Enable depth buffering
+        glDepthFunc(GL_LEQUAL);     // Useful for multipass shaders
+    
+        // Set polygon drawing mode for front and back of each triangle
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+    
+        // Disable backface culling to render both sides of polygons
+        // glDisable(GL_CULL_FACE);
+    
+        // The following commands should induce OpenGL to create round points and 
+        //  antialias points and lines.  (This is implementation dependent unfortunately.)
+        glEnable(GL_POINT_SMOOTH);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);    // Make round points, not square points
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);     // Antialias the lines
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    }
+    
+}
+pub fn setup_gl_old() {
     unsafe {
         glClearColor(0.0, 0.0, 0.0, 0.0);
         // glClearColor(64.0/255.0, 64.0/255.0, 64.0/255.0, 1.0);
@@ -120,8 +164,77 @@ pub fn draw_segment_92(
 } //draw_segments
 
 /*********************************/
-
 pub fn draw_as_polyline_segment(
+    points: &[Point3<f32>],
+    color: &Vec<u8>,
+    diameters: &Vec<f32>,
+    midpoint_names: &Vec<&str>,
+) {
+    
+    
+ unsafe{
+    
+
+   let points_vec = points.to_vec();
+  
+     
+
+   let mut i = 0;
+   glPushMatrix(); //start 2
+   glColor3ub(color[0], color[1], color[2]);
+
+   while  i < points_vec.len() {
+    glLineWidth(diameters[i] * SIZE_UNIT * 0.7);  
+
+    glBegin(GL_LINE_STRIP);   
+    glVertex3f(
+          points_vec[i][0],
+          points_vec[i][1],
+          points_vec[i][2] );
+    i = i+1;
+   
+
+}//while 
+
+glEnd();
+glPopMatrix();
+/*************************************** */
+
+let mut j = 0;
+let mut vertices: Vec<f32> = Vec::new();
+
+while  j < points_vec.len() {
+    vertices.push(points_vec[j][0] );
+    vertices.push(points_vec[j][1] );
+    vertices.push(points_vec[j][2] );
+      j = j+1;
+
+}
+ 
+println!("vertices: {:?} ", vertices);
+    /*
+    vertices: 
+    [Point { coords: Matrix { data: [0.52824193, -5.1997576, -3.3351884] } }, 
+    Point { coords: Matrix { data: [0.8136828, -4.9056125, -4.186035] } }, 
+    Point { coords: Matrix { data: [1.0872766, -5.7524786, -4.360828] } }, 
+    Point { coords: Matrix { data: [2.565919, -6.6323004, -3.6645122] } }] 
+*/
+/**************************************** */
+   //let (mut VBO, mut VAO) = (0, 0);
+   //gl::GenVertexArrays(1, &mut VAO);
+   //gl::GenBuffers(1, &mut VBO);
+
+ // let VAO: u32;
+  //glReadBuffer(1, &VBO);
+  
+
+ 
+}//unsafe
+
+
+}//fn
+/**************************************/
+pub fn draw_as_polyline_segment_old(
     points: &[Point3<f32>],
     color: &Vec<u8>,
     diameters: &Vec<f32>,

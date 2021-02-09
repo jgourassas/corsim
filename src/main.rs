@@ -4,10 +4,13 @@
 // If cairo.h not found-> change pangocairo.h to include your cairo.h
 
 #![allow(non_snake_case)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_imports)]
 
-use fltk::dialog::message;
 use fltk::*;
-use fltk::{button::*, frame::*, window::*};
+use fltk::dialog::message;
+use fltk::{frame::*, window::*};
 
 
 use std::cell::RefCell;
@@ -23,6 +26,8 @@ use actions::onclick::show_segment_name;
 
 mod controls;
 use controls::slider::make_slider;
+//use controls::button::make_button;
+use controls::button::MyButton;
 
 mod graphics;
 
@@ -39,11 +44,10 @@ const MARGIN_TOP: i32 = 50;
 const MARGIN_BOTTOM: i32 = 100;
 const MARGIN_RIGHT: i32 = 220;
 const MARGIN_LEFT: i32 = 10;
-//const SIZE_UNIT: f32 = 2.5;
+
 
 const FLTK_WINDOW_WIDTH: i32 = 1650 - MARGIN_LEFT - MARGIN_RIGHT;
 const FLTK_WINDOW_HEIGHT: i32 = 1200 - MARGIN_TOP - MARGIN_BOTTOM;
-
 
 const GL_WINDOW_WIDTH: i32 = FLTK_WINDOW_WIDTH - 250;
 const GL_WINDOW_HEIGHT: i32 = FLTK_WINDOW_HEIGHT - 100;
@@ -86,7 +90,14 @@ pub fn main() {
         message(200, 200, &panic_info.to_string());
     }));
 
+    
     let app = app::App::default().with_scheme(app::Scheme::Gtk);
+    //let app = app::App::default();
+    //let (r, g, b) = utils::hex2rgb(0xfafdf3);
+        //app::set_color(r,g,b);//Not workng ???
+
+
+
     let mut fltk_wind = Window::new(
         100,
         100,
@@ -100,7 +111,7 @@ pub fn main() {
     let mut  widget_rao_lao = make_slider(
         WIDGET_RAO_LAO_X,
         WIDGET_RAO_LAO_Y,
-        30,
+         25,
          240,
          WIDGET_RAO_LAO_TITLE,
          WIDGET_RAO_LAO_BOUNDS,
@@ -139,14 +150,14 @@ pub fn main() {
         40,
         "",
     );
-    frame_rao_lao.set_color(Color::from_rgb(39, 45, 206)); //blue
+    frame_rao_lao.set_color(Color::from_rgb(252,141,89)); //orange like
     frame_rao_lao.set_label_size(22);
 
 
     let mut widget_cr_ca = make_slider(
         WIDGET_CR_CA_X,
         WIDGET_CR_CA_Y,
-        30,
+        25,
         240,
         WIDGET_CR_CA_TITLE,
         WIDGET_CR_CA_BOUNDS,
@@ -166,29 +177,32 @@ pub fn main() {
     frame_cr_ca.set_color(Color::from_rgb(39, 206, 201)); //green
     frame_cr_ca.set_label_size(22);
 
-    let mut but_quit = Button::new(
+
+
+    let mut but_quit = MyButton::new(
         FLTK_WINDOW_WIDTH - 100,
         FLTK_WINDOW_HEIGHT - 400,
         70,
         40,
         "Quit➤",
     );
-    but_quit.set_color(Color::from_rgb(251, 180, 174)); //red
-    but_quit.set_label_size(18);
-    // but_quit.set_color(Color::from_rgb(102,194,165)); //green
-    but_quit.set_callback(Box::new(move || cb_quit()));
 
-    let mut but_ap_view = Button::new(
+    but_quit.set_callback(|| cb_quit() );
+
+    
+    let mut but_ap_view = MyButton::new(
         FLTK_WINDOW_WIDTH - 220,
         FLTK_WINDOW_HEIGHT - 400,
         70,
         40,
-        "A-P View",
+        "A-P",
     );
 
-          
-    
 
+
+
+       
+    
     let mut frame_info_view = Frame::new(
         FRAME_INFO_X,
         FRAME_INFO_Y,
@@ -207,7 +221,7 @@ pub fn main() {
         FRAME_INFO_Y + 20,
         FRAME_INFO_WIDTH - 10,
         FRAME_INFO_HEIGHT - 195,
-        "OPTIMAL VIEWS",
+        "SUGGESTED OPTIMAL VIEWS",
     );
     table.set_rows(14);
     table.set_row_header(true);
@@ -255,8 +269,6 @@ pub fn main() {
 
         _ => (),
     }));
-
-    but_ap_view.set_color(Color::from_rgb(161, 215, 106)); //blue light
 
     let mut gl_wind = window::GlWindow::new(
         10,
@@ -312,12 +324,17 @@ pub fn main() {
         s.send(msg)
     }));
 
-    but_ap_view.set_callback(Box::new(move || {
+    
+    but_ap_view.set_callback(move || {
         let msg = (Message::AnteriorPosterior, 0.0);
         s.send(msg)
-    }));
 
-    while app.wait().unwrap() {
+      }
+    );
+
+
+    while app.wait() {
+   // while app.wait().unwrap() {
         if let Some(msg) = r.recv() {
             //use Message::*;
             match msg {

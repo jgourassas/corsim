@@ -9,14 +9,13 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-fltk = { version = "0.14.3", features = ["enable-glwindow"] }
+fltk = { version = "0.8.0", features = ["enable-glwindow"] }
 glu-sys = "0.1.4"
-nalgebra = "0.24.1"
-approx = "0.4.0"
-csv = "1.1.5"
-ncollide3d = "0.27.0"
-ncollide2d = "0.27.0"
-hex = "0.4.2"
+nalgebra = "0.23.0"
+approx = "0.3.2"
+csv = "1.1.3"
+ncollide3d = "0.26.1"
+ncollide2d = "0.26.1"
 
 [package.metadata.bundle]
 name = "CorSim"
