@@ -8,10 +8,9 @@
 #![allow(unused_mut)]
 #![allow(unused_imports)]
 
-use fltk::*;
 use fltk::dialog::message;
+use fltk::*;
 use fltk::{frame::*, window::*};
-
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -19,16 +18,14 @@ use std::{error::Error, fmt, panic, thread, time};
 
 extern crate csv;
 
-
 mod actions;
 
 use actions::onclick::show_segment_name;
 
 mod controls;
 use controls::button::MyButton;
-//use controls::slider::make_slider;
 use controls::slider::MySlider;
-
+use controls::table::MyTable;
 
 mod graphics;
 
@@ -39,13 +36,10 @@ use graphics::draw::{
     setup_gl,
 };
 
-use crate::graphics::data_gets::get_optimal_views;
-
 const MARGIN_TOP: i32 = 50;
 const MARGIN_BOTTOM: i32 = 100;
 const MARGIN_RIGHT: i32 = 220;
 const MARGIN_LEFT: i32 = 10;
-
 
 const FLTK_WINDOW_WIDTH: i32 = 1650 - MARGIN_LEFT - MARGIN_RIGHT;
 const FLTK_WINDOW_HEIGHT: i32 = 1200 - MARGIN_TOP - MARGIN_BOTTOM;
@@ -59,16 +53,15 @@ const FRAME_INFO_Y: i32 = MARGIN_TOP;
 const FRAME_INFO_WIDTH: i32 = FLTK_WINDOW_WIDTH - (GL_WINDOW_WIDTH + 12);
 const FRAME_INFO_HEIGHT: i32 = GL_WINDOW_HEIGHT - 370;
 
-const WIDGET_RAO_LAO_X: i32 =  FLTK_WINDOW_WIDTH - 80;
-const WIDGET_RAO_LAO_Y: i32  = FLTK_WINDOW_HEIGHT - 350;
-const WIDGET_RAO_LAO_BOUNDS: [i32;2] = [-90, 90];
-const WIDGET_RAO_LAO_TITLE: &str =  "⇑Lao/Rao⇩";
+const WIDGET_RAO_LAO_X: i32 = FLTK_WINDOW_WIDTH - 80;
+const WIDGET_RAO_LAO_Y: i32 = FLTK_WINDOW_HEIGHT - 350;
+const WIDGET_RAO_LAO_BOUNDS: [i32; 2] = [-90, 90];
+const WIDGET_RAO_LAO_TITLE: &str = "⇑Lao/Rao⇩";
 
-const WIDGET_CR_CA_X: i32 =  FLTK_WINDOW_WIDTH - 200;
+const WIDGET_CR_CA_X: i32 = FLTK_WINDOW_WIDTH - 200;
 const WIDGET_CR_CA_Y: i32 = FLTK_WINDOW_HEIGHT - 350;
-const WIDGET_CR_CA_BOUNDS: [i32;2] = [90, -90];
-const WIDGET_CR_CA_TITLE: &str =  "↑Cra/Cau↓";
-
+const WIDGET_CR_CA_BOUNDS: [i32; 2] = [90, -90];
+const WIDGET_CR_CA_TITLE: &str = "↑Cra/Cau↓";
 
 #[derive(Debug, Clone, Copy)]
 pub enum Message {
@@ -91,13 +84,10 @@ pub fn main() {
         message(200, 200, &panic_info.to_string());
     }));
 
-    
     let app = app::App::default().with_scheme(app::Scheme::Gtk);
     //let app = app::App::default();
     //let (r, g, b) = utils::hex2rgb(0xfafdf3);
-        //app::set_color(r,g,b);//Not workng ???
-
-
+    //app::set_color(r,g,b);//Not workng ???
 
     let mut fltk_wind = Window::new(
         100,
@@ -107,17 +97,15 @@ pub fn main() {
         "CORONARY Views. By John Gkourasas (old J. Gourassas)",
     );
 
-
-    let mut  widget_rao_lao = MySlider::new(
+    let mut widget_rao_lao = MySlider::new(
         WIDGET_RAO_LAO_X,
         WIDGET_RAO_LAO_Y,
-         25,
-         240,
-         WIDGET_RAO_LAO_TITLE,
-         WIDGET_RAO_LAO_BOUNDS,
+        25,
+        240,
+        WIDGET_RAO_LAO_TITLE,
+        WIDGET_RAO_LAO_BOUNDS,
     );
     let widget_rao_lao_c = widget_rao_lao.clone();
-
 
     /*
     Philips XPER FD10C R7.0.4
@@ -139,10 +127,6 @@ pub fn main() {
     The Secondary Positioner Angle range is -90 to + 90 degrees.
     */
 
-  
- 
-   
-
     let mut frame_rao_lao = Frame::new(
         FLTK_WINDOW_WIDTH - 60,
         FLTK_WINDOW_HEIGHT - 250,
@@ -151,20 +135,20 @@ pub fn main() {
         "",
     );
 
-    frame_rao_lao.set_color(Color::from_rgb(252,141,89)); //orange like
+    frame_rao_lao.set_color(Color::from_rgb(252, 141, 89)); //orange like
     frame_rao_lao.set_label_size(20);
 
-  let mut widget_cr_ca = MySlider::new(
-    WIDGET_CR_CA_X,
-    WIDGET_CR_CA_Y,
-    25,
-    240,
-    WIDGET_CR_CA_TITLE,
-    WIDGET_CR_CA_BOUNDS,
-);
+    
+    let mut widget_cr_ca = MySlider::new(
+        WIDGET_CR_CA_X,
+        WIDGET_CR_CA_Y,
+        25,
+        240,
+        WIDGET_CR_CA_TITLE,
+        WIDGET_CR_CA_BOUNDS,
+    );
 
     let widget_cr_ca_c = widget_cr_ca.clone();
-
 
     let mut frame_cr_ca = Frame::new(
         FLTK_WINDOW_WIDTH - 255,
@@ -177,8 +161,6 @@ pub fn main() {
     frame_cr_ca.set_color(Color::from_rgb(39, 206, 201)); //green
     frame_cr_ca.set_label_size(20);
 
-
-
     let mut but_quit = MyButton::new(
         FLTK_WINDOW_WIDTH - 100,
         FLTK_WINDOW_HEIGHT - 400,
@@ -187,9 +169,8 @@ pub fn main() {
         "Quit➤",
     );
 
-    but_quit.set_callback(|| cb_quit() );
+    but_quit.set_callback(|| cb_quit());
 
-    
     let mut but_ap_view = MyButton::new(
         FLTK_WINDOW_WIDTH - 220,
         FLTK_WINDOW_HEIGHT - 400,
@@ -198,11 +179,6 @@ pub fn main() {
         "A-P",
     );
 
-
-
-
-       
-    
     let mut frame_info_view = Frame::new(
         FRAME_INFO_X,
         FRAME_INFO_Y,
@@ -211,64 +187,18 @@ pub fn main() {
         "Info View",
     );
 
-    frame_info_view.set_color(Color::from_rgb(222, 235, 247)); //blue
+    frame_info_view.set_color(Color::from_rgb(222, 235, 247)); //white
     frame_info_view.set_frame(FrameType::RFlatBox);
     frame_info_view.set_label_size(20);
     frame_info_view.set_label("Optimal Views");
 
-    let mut table = table::Table::new(
+    let mut table = MyTable::new(
         FRAME_INFO_X,
         FRAME_INFO_Y + 20,
         FRAME_INFO_WIDTH - 10,
         FRAME_INFO_HEIGHT - 195,
         "SUGGESTED OPTIMAL VIEWS",
     );
-    table.set_rows(14);
-    table.set_row_header(true);
-    table.set_row_resize(true);
-    table.set_cols(3);
-    table.set_col_header(true);
-    table.set_col_width_all(240);
-    table.set_row_height_all(25);
-
-    table.set_col_resize(true);
-    // table.selection_color(FL_YELLOW);
-    table.end();
-    // Called when the table is drawn then when it's redrawn due to events
-    let table_c = table.clone();
-
-    // Fl_Table calls this function to draw each visible cell in the table.
-    // draw_cell(TableContext context, int ROW=0, int COL=0, int X=0, int Y=0, int W=0, int H=0)
-    //We move cells to the heap by Box...
-
-    table.draw_cell(Box::new(move |ctx, row, col, x, y, w, h| match ctx {
-        table::TableContext::StartPage => draw::set_font(Font::Helvetica, 16),
-        table::TableContext::ColHeader => {
-            let header = vec!["SITE", "Option A", "Option B"];
-            let idx = col as usize;
-            draw_header(&format!("{}", header[idx]), x, y, w, h);
-        } // Column titles
-        table::TableContext::RowHeader => {
-            draw_header(&format!("{}", row + 1), x, y, w, h)
-        } // Row titles
-        table::TableContext::Cell => {
-            let max_col = 3;
-
-            let sarray = get_optimal_views();
-            let idx = (row * max_col + col) as usize;
-
-            draw_data(
-                &format!("{}", sarray[idx]),
-                x,
-                y,
-                w,
-                h,
-                table_c.is_selected(row, col),
-            ); // Data in cells
-        }
-
-        _ => (),
-    }));
 
     let mut gl_wind = window::GlWindow::new(
         10,
@@ -312,15 +242,12 @@ pub fn main() {
         _ => false,
     }));
 
-
     widget_rao_lao.set_callback(move || {
         let angle_rao_lao = widget_rao_lao_c.value() as f32;
         //let angle_rao_lao = widget_rao_lao.value() as f32;
         let msg = (Message::Raolao, angle_rao_lao);
         s.send(msg);
     });
-
- 
 
     widget_cr_ca.set_callback(move || {
         let angle_cr_ca = widget_cr_ca_c.value() as f32;
@@ -331,13 +258,10 @@ pub fn main() {
     but_ap_view.set_callback(move || {
         let msg = (Message::AnteriorPosterior, 0.0);
         s.send(msg)
-
-      }
-    );
-
+    });
 
     while app.wait() {
-   // while app.wait().unwrap() {
+        // while app.wait().unwrap() {
         if let Some(msg) = r.recv() {
             //use Message::*;
             match msg {
@@ -370,35 +294,8 @@ pub fn main() {
             } //match msg
         } //if r_recv
     } //while
-
-         
-    
 } //main
   /****************************************** */
-
-fn draw_header(txt: &str, x: i32, y: i32, w: i32, h: i32) {
-    draw::push_clip(x, y, w, h);
-    draw::draw_box(FrameType::ThinUpBox, x, y, w, h, Color::FrameDefault);
-    draw::set_draw_color(Color::Black);
-    draw::draw_text2(txt, x, y, w, h, Align::Center);
-    draw::pop_clip();
-}
-
-fn draw_data(txt: &str, x: i32, y: i32, w: i32, h: i32, selected: bool) {
-    draw::push_clip(x, y, w, h);
-    if selected {
-        draw::set_draw_color(Color::from_u32(0xD3D3D3));
-    } else {
-        draw::set_draw_color(Color::White);
-    }
-    draw::draw_rectf(x, y, w, h);
-    draw::set_draw_color(Color::Gray0);
-    draw::draw_text2(txt, x, y, w, h, Align::Center);
-    draw::draw_rect(x, y, w, h);
-    draw::pop_clip();
-}
-
-/******************************************** */
 fn cb_quit() {
     //let nomeclature = get_nomeclature("LAD");
     // println!("nomeclature:{:?} ", nomeclature);
