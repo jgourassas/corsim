@@ -25,9 +25,10 @@ mod actions;
 use actions::onclick::show_segment_name;
 
 mod controls;
-use controls::slider::make_slider;
-//use controls::button::make_button;
 use controls::button::MyButton;
+//use controls::slider::make_slider;
+use controls::slider::MySlider;
+
 
 mod graphics;
 
@@ -107,8 +108,7 @@ pub fn main() {
     );
 
 
-
-    let mut  widget_rao_lao = make_slider(
+    let mut  widget_rao_lao = MySlider::new(
         WIDGET_RAO_LAO_X,
         WIDGET_RAO_LAO_Y,
          25,
@@ -150,19 +150,19 @@ pub fn main() {
         40,
         "",
     );
+
     frame_rao_lao.set_color(Color::from_rgb(252,141,89)); //orange like
-    frame_rao_lao.set_label_size(22);
+    frame_rao_lao.set_label_size(20);
 
+  let mut widget_cr_ca = MySlider::new(
+    WIDGET_CR_CA_X,
+    WIDGET_CR_CA_Y,
+    25,
+    240,
+    WIDGET_CR_CA_TITLE,
+    WIDGET_CR_CA_BOUNDS,
+);
 
-    let mut widget_cr_ca = make_slider(
-        WIDGET_CR_CA_X,
-        WIDGET_CR_CA_Y,
-        25,
-        240,
-        WIDGET_CR_CA_TITLE,
-        WIDGET_CR_CA_BOUNDS,
-    );
-    
     let widget_cr_ca_c = widget_cr_ca.clone();
 
 
@@ -175,7 +175,7 @@ pub fn main() {
     );
 
     frame_cr_ca.set_color(Color::from_rgb(39, 206, 201)); //green
-    frame_cr_ca.set_label_size(22);
+    frame_cr_ca.set_label_size(20);
 
 
 
@@ -312,19 +312,22 @@ pub fn main() {
         _ => false,
     }));
 
-    widget_rao_lao.set_callback(Box::new(move || {
+
+    widget_rao_lao.set_callback(move || {
         let angle_rao_lao = widget_rao_lao_c.value() as f32;
+        //let angle_rao_lao = widget_rao_lao.value() as f32;
         let msg = (Message::Raolao, angle_rao_lao);
         s.send(msg);
-    }));
+    });
 
-    widget_cr_ca.set_callback(Box::new(move || {
+ 
+
+    widget_cr_ca.set_callback(move || {
         let angle_cr_ca = widget_cr_ca_c.value() as f32;
         let msg = (Message::Crca, angle_cr_ca);
         s.send(msg)
-    }));
+    });
 
-    
     but_ap_view.set_callback(move || {
         let msg = (Message::AnteriorPosterior, 0.0);
         s.send(msg)
